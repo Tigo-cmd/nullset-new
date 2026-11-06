@@ -10,6 +10,7 @@ import { ObserverCard } from "./ObserverCard";
 import { ControlsCard, type Controls } from "./ControlsCard";
 import { MixingVisual } from "./MixingVisual";
 import { MixHistory } from "./MixHistory";
+import { DepositHistory } from "./DepositHistory";
 import { brandStyle, useBrand } from "@/lib/nullset/brand";
 import { WalletModal, WALLET_OPTIONS, type WalletKind } from "./WalletModal";
 import { clock, randAddress, randHex, seedMixHistory, seedPools, sha256, type Denom, type LedgerEvent, type MixRecord, type Pool } from "@/lib/nullset/sim";
@@ -204,6 +205,7 @@ export function MixerApp() {
 
         <MixingVisual events={events} pools={pools} denom={denom} teacher={teacher} />
         <ObserverCard events={events} teacher={teacher} onTeacherChange={setTeacher} onStrangerActivity={strangerActivity} />
+        <DepositHistory events={events} mixes={mixes} />
         <MixHistory mixes={mixes} />
 
         <section id="how" className="mt-16 scroll-mt-24">

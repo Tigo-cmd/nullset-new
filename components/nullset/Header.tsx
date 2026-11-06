@@ -15,7 +15,8 @@ const LINKS = [
   { href: "#pool", label: "Pool" },
   { href: "#stats", label: "Statistics" },
   { href: "#mixing", label: "Live pool" },
-  { href: "#history", label: "History" },
+  { href: "#deposits", label: "Deposits" },
+  { href: "#history", label: "Mixes" },
   { href: "#how", label: "How it works" },
 ];
 
