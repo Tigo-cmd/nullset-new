@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+/*
+ * Nullset theme.
+ * Deep navy surfaces, teal for actions, violet for privacy-related ("hidden") data.
+ */
+@theme {
+  --color-ns-bg: #0a0d14;
+  --color-ns-surface: #111622;
+  --color-ns-surface-2: #171d2c;
+  --color-ns-surface-3: #1e2537;
+  --color-ns-border: #252d40;
+  --color-ns-border-strong: #34405a;
+  --color-ns-text: #eef1f8;
+  --color-ns-muted: #8f98ad;
+  --color-ns-teal: #2dd4bf;
+  --color-ns-teal-soft: #0f2f2c;
+  --color-ns-teal-ink: #04201c;
+  --color-ns-violet: #9b87ff;
+  --color-ns-violet-soft: #221c40;
+  --color-ns-warn: #f0b555;
+  --color-ns-warn-soft: #2e2412;
+  --color-ns-danger: #f2687a;
+  --color-ns-danger-soft: #34151b;
+  --color-ns-ok: #4ade80;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-ns-bg);
+}
+
+/* Page shell: the glows follow the (presenter-editable) brand colours. */
+.ns-shell {
+  background:
+    radial-gradient(1200px 500px at 10% -10%, color-mix(in srgb, var(--color-ns-teal) 8%, transparent), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, color-mix(in srgb, var(--color-ns-violet) 8%, transparent), transparent 60%),
+    var(--color-ns-bg);
+  background-repeat: no-repeat;
+  background-color: var(--color-ns-bg);
+}
+
+::selection {
+  background: rgb(45 212 191 / 0.3);
+}
+
+.ns-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.ns-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-ns-border-strong);
+  border-radius: 999px;
+}
+
+/* Pool animation */
+@keyframes ns-orbit {
+  from { transform: rotate(var(--a0)) translateX(var(--r)) rotate(calc(-1 * var(--a0))); }
+  to { transform: rotate(calc(var(--a0) + 360deg)) translateX(var(--r)) rotate(calc(-1 * var(--a0) - 360deg)); }
+}
+@keyframes ns-enter {
+  0% { left: 9%; opacity: 0; transform: translate(-50%, -50%) scale(1); }
+  12% { opacity: 1; }
+  80% { left: 50%; opacity: 1; transform: translate(-50%, -50%) scale(0.8); }
+  100% { left: 50%; opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+}
+@keyframes ns-exit {
+  0% { left: 50%; opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  20% { left: 50%; opacity: 1; transform: translate(-50%, -50%) scale(0.8); }
+  88% { opacity: 1; }
+  100% { left: 91%; opacity: 0; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes ns-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(45 212 191 / 0.25); }
+  50% { box-shadow: 0 0 0 14px rgb(45 212 191 / 0); }
+}
+.ns-orbit { animation: ns-orbit var(--d) linear infinite; animation-delay: var(--dl); }
+.ns-enter { animation: ns-enter 2.2s ease-in-out both; }
+.ns-exit { animation: ns-exit 2.2s ease-in-out both; }
+.ns-pulse { animation: ns-pulse 2.4s ease-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .ns-orbit, .ns-enter, .ns-exit, .ns-pulse { animation-duration: 0.01ms; animation-iteration-count: 1; }
+}
+
+/* Number inputs: no spinner buttons (they hide digits in narrow fields). */
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

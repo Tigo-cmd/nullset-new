@@ -1,0 +1,235 @@
+// Nullset: local, in-browser simulation helpers.
+//
+// Nothing in this file touches a network, wallet, or blockchain. Hashes are
+// real SHA-256 (Web Crypto) so the note → commitment → nullifier flow is
+// genuine, but "deposits", "proofs" and "withdrawals" only change React state.
+
+export const DENOMS = ["0.1", "1", "10", "100"] as const;
+export type Denom = (typeof DENOMS)[number];
+export const TOKEN = "ETH";
+
+const enc = new TextEncoder();
+
+export function toHex(buf: ArrayBuffer | Uint8Array): string {
+  return Array.from(new Uint8Array(buf), (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+export function randHex(bytes: number): string {
+  return toHex(crypto.getRandomValues(new Uint8Array(bytes)));
+}
+
+export function randAddress(): string {
+  return "0x" + randHex(20);
+}
+
+export async function sha256(...parts: string[]): Promise<string> {
+  return toHex(await crypto.subtle.digest("SHA-256", enc.encode(parts.join("|"))));
+}
+
+export function shorten(h: string, head = 6, tail = 4): string {
+  return h.length <= head + tail + 1 ? h : `${h.slice(0, head)}…${h.slice(-tail)}`;
+}
+
+export function isAddress(a: string): boolean {
+  return /^0x[0-9a-fA-F]{40}$/.test(a.trim());
+}
+
+// ---- notes ---------------------------------------------------------------
+
+export interface Note {
+  denom: Denom;
+  nullifier: string;
+  secret: string;
+}
+
+export function makeNote(denom: Denom): Note {
+  return { denom, nullifier: randHex(31), secret: randHex(31) };
+}
+
+export function encodeNote(n: Note, prefix = "nullset"): string {
+  return `${prefix}-${n.denom}${TOKEN.toLowerCase()}-${n.nullifier}${n.secret}`;
+}
+
+export function parseNote(raw: string): Note | null {
+  const m = raw.trim().match(/^[a-z0-9]{1,24}-(0\.1|1|10|100)eth-([0-9a-f]{62})([0-9a-f]{62})$/);
+  if (!m) return null;
+  return { denom: m[1] as Denom, nullifier: m[2], secret: m[3] };
+}
+
+export const commitmentOf = (n: Note) => sha256(n.nullifier, n.secret);
+export const nullifierHashOf = (n: Note) => sha256("nf", n.nullifier);
+
+// ---- seeded pool data (deterministic so server and client render match) ---
+
+function mulberry32(seed: number) {
+  return () => {
+    seed |= 0;
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+export interface PoolDeposit {
+  index: number;
+  /** Absolute time (ms) for deposits made in this session. */
+  at?: number;
+  /** Age in ms at page load, for seeded deposits. */
+  ageAtLoad?: number;
+  mine?: boolean;
+}
+
+export interface Pool {
+  count: number;
+  withdrawn: number;
+  recent: PoolDeposit[]; // newest first
+  leaves: Record<string, number>; // commitment → leaf number, for deposits made this session
+  spent: string[];
+}
+
+const SEED_COUNTS: Record<Denom, number> = { "0.1": 1284, "1": 642, "10": 211, "100": 48 };
+const SEED_SPACING_MIN: Record<Denom, number> = { "0.1": 9, "1": 22, "10": 95, "100": 410 };
+
+export function seedPools(): Record<Denom, Pool> {
+  const rnd = mulberry32(20261106);
+  const out = {} as Record<Denom, Pool>;
+  for (const d of DENOMS) {
+    const count = SEED_COUNTS[d];
+    let age = rnd() * SEED_SPACING_MIN[d] * 60_000;
+    const recent: PoolDeposit[] = [];
+    for (let i = 0; i < 40; i++) {
+      recent.push({ index: count - i, ageAtLoad: age });
+      age += (0.3 + rnd() * 1.4) * SEED_SPACING_MIN[d] * 60_000;
+    }
+    out[d] = { count, withdrawn: Math.floor(count * (0.55 + rnd() * 0.2)), recent, leaves: {}, spent: [] };
+  }
+  return out;
+}
+
+export function formatAgo(ms: number): string {
+  const s = Math.max(0, Math.floor(ms / 1000));
+  if (s < 45) return "just now";
+  const m = Math.round(s / 60);
+  if (m < 60) return `${m} minute${m === 1 ? "" : "s"} ago`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h} hour${h === 1 ? "" : "s"} ago`;
+  const d = Math.round(h / 24);
+  return `${d} day${d === 1 ? "" : "s"} ago`;
+}
+
+// ---- clock store (for useSyncExternalStore; 0 on the server) -------------
+
+let now = 0;
+let loadedAt = 0;
+let timer: ReturnType<typeof setInterval> | null = null;
+const subs = new Set<() => void>();
+
+export const clock = {
+  subscribe(cb: () => void) {
+    subs.add(cb);
+    if (!timer) {
+      timer = setInterval(() => {
+        now = Date.now();
+        subs.forEach((f) => f());
+      }, 15_000);
+    }
+    return () => {
+      subs.delete(cb);
+      if (!subs.size && timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    };
+  },
+  getSnapshot() {
+    if (!now) now = loadedAt = Date.now();
+    return now;
+  },
+  getServerSnapshot() {
+    return 0;
+  },
+  loadedAt: () => loadedAt,
+  tick() {
+    now = Date.now();
+    subs.forEach((f) => f());
+  },
+};
+
+export function depositAge(d: PoolDeposit, nowMs: number): number {
+  if (d.at) return nowMs - d.at;
+  return nowMs - clock.loadedAt() + (d.ageAtLoad ?? 0);
+}
+
+export interface LedgerEvent {
+  id: string;
+  kind: "deposit" | "withdraw";
+  denom: Denom;
+  /** Depositor (deposit) or recipient (withdraw). Public. */
+  address: string;
+  /** Commitment (deposit) or nullifier hash (withdraw). Public. */
+  hash: string;
+  at: number;
+  fee?: number;
+  leaf?: number;
+  mine?: boolean;
+  /** Private knowledge only the note holder has: which leaf a withdrawal spent. */
+  spentLeaf?: number;
+  /** Pool size when a withdrawal happened. */
+  setSize?: number;
+  /** Seconds to wait before animating this event (staggers batches). */
+  delay?: number;
+}
+
+export interface MixRecord {
+  id: string;
+  denom: Denom;
+  from: string;
+  to: string;
+  /** Absolute times for this session's mixes. */
+  depositAt?: number;
+  withdrawAt?: number;
+  /** Ages at page load (ms) for earlier example mixes. */
+  depositAge?: number;
+  withdrawAge?: number;
+  setSize: number;
+  leaf: number;
+}
+
+function seededHex(rnd: () => number, bytes: number) {
+  let out = "";
+  for (let i = 0; i < bytes; i++) out += Math.floor(rnd() * 256).toString(16).padStart(2, "0");
+  return out;
+}
+
+/** A few earlier mixes so the history isn't empty on first load (deterministic for SSR). */
+export function seedMixHistory(): MixRecord[] {
+  const rnd = mulberry32(7331);
+  const H = 3_600_000;
+  const rows: [Denom, number, number, number, number][] = [
+    ["1", 26 * H, 74 * H, 598, 571],
+    ["0.1", 7 * H, 31 * H, 1271, 1240],
+    ["10", 52 * H, 140 * H, 209, 203],
+  ];
+  return rows.map(([denom, wAge, dAge, setSize, leaf], i) => ({
+    id: "seed" + i,
+    denom,
+    from: "0x" + seededHex(rnd, 20),
+    to: "0x" + seededHex(rnd, 20),
+    depositAge: dAge,
+    withdrawAge: wAge,
+    setSize,
+    leaf,
+  }));
+}
+
+export function formatDuration(ms: number): string {
+  const m = Math.round(ms / 60_000);
+  if (m < 1) return "under a minute";
+  if (m < 60) return `${m} min`;
+  const h = Math.floor(m / 60);
+  if (h < 48) return `${h} h ${m % 60} min`;
+  return `${Math.round(h / 24)} days`;
+}
+
+export const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
