@@ -48,7 +48,7 @@ export function MixingVisual({ events, pools, denom, teacher, presenter, onTeach
 
   const inPool = events.filter((e) => e.denom === denom);
   const deposits: LedgerEvent[] = [
-    ...(presenter ? [{ id: "user-dep", kind: "deposit" as const, denom, address: userAddress, hash: "", at: 0, mine: true }] : []),
+    ...(presenter ? [{ id: "user-dep", kind: "deposit" as const, denom: "14.953", address: userAddress, hash: "", at: 0, mine: true }] : []),
     ...inPool.filter((e) => e.kind === "deposit"),
   ].slice(0, 4);
   const withdrawals = inPool.filter((e) => e.kind === "withdraw").slice(0, 4);
