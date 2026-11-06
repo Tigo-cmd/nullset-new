@@ -1,8 +1,8 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { ArrowRight, GraduationCap, Shuffle } from "lucide-react";
-import { clock, formatUsd, shorten, TOKEN, type Denom, type LedgerEvent, type MixRecord, type Pool } from "@/lib/nullset/sim";
+import { ArrowRight, Shuffle } from "lucide-react";
+import { clock, formatUsd, shorten, TOKEN, USER_ADDRESS, type Denom, type LedgerEvent, type MixRecord, type Pool } from "@/lib/nullset/sim";
 import { useEthUsd } from "@/lib/nullset/price";
 import type { DemoWallet } from "./Header";
 
@@ -43,7 +43,7 @@ export function MixingVisual({ events, pools, denom, teacher, presenter, onTeach
   const inPoolMixes = mixes.filter((m) => m.withdrawAge == null && m.withdrawAt == null);
   const inPoolAmount = inPoolMixes.reduce((s, m) => s + Number(m.denom), 0);
   const orderAmount = inPoolAmount || mixingAmount || 14.2;
-  const userAddress = wallet?.address ?? inPoolMixes[0]?.from;
+  const userAddress = wallet?.address ?? inPoolMixes[0]?.from ?? USER_ADDRESS;
   const dots = Math.min(MAX_DOTS, pool.count);
   const mineSlots = new Set(Object.values(pool.leaves).map((leaf) => leaf % dots));
 
@@ -73,9 +73,7 @@ export function MixingVisual({ events, pools, denom, teacher, presenter, onTeach
           <Legend color="bg-ns-violet" label="your withdrawal" />
           <Legend color="bg-ns-muted" label="other users" />
           {presenter && (
-            <label className="flex h-8 cursor-pointer items-center gap-2 rounded-sm border border-ns-border px-3 text-xs font-semibold text-ns-text">
-              <GraduationCap className="size-3.5 text-ns-violet" />
-              Teacher view
+            <label className="inline-flex cursor-pointer items-center" aria-label="Toggle controls">
               <input type="checkbox" checked={teacher} onChange={(e) => onTeacherChange(e.target.checked)} className="peer sr-only" />
               <span
                 className="relative h-4 w-7 rounded-full bg-ns-surface-3 transition peer-checked:bg-ns-violet after:absolute after:left-0.5 after:top-0.5 after:size-3 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-3"

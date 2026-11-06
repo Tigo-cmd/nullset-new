@@ -11,7 +11,7 @@ import { MixingVisual } from "./MixingVisual";
 import { brandStyle, useBrand } from "@/lib/nullset/brand";
 import { usePresenter } from "@/lib/nullset/present";
 import { WalletModal, WALLET_OPTIONS, type WalletKind } from "./WalletModal";
-import { clock, randAddress, randHex, seedMixHistory, seedPools, sha256, makeExampleMix, type Denom, type LedgerEvent, type MixRecord, type Pool } from "@/lib/nullset/sim";
+import { clock, randAddress, randHex, seedMixHistory, seedPools, sha256, makeExampleMix, USER_ADDRESS, type Denom, type LedgerEvent, type MixRecord, type Pool } from "@/lib/nullset/sim";
 
 export function MixerApp() {
   const [wallet, setWallet] = useState<DemoWallet | null>(null);
@@ -29,7 +29,7 @@ export function MixerApp() {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("tornado-mixes");
+      const saved = localStorage.getItem("tornado-mixes-v2");
       if (saved) setMixes(JSON.parse(saved));
     } catch {
       /* ignore */
@@ -40,7 +40,7 @@ export function MixerApp() {
     setMixes((list) => {
       const next = fn(list);
       try {
-        localStorage.setItem("tornado-mixes", JSON.stringify(next));
+        localStorage.setItem("tornado-mixes-v2", JSON.stringify(next));
       } catch {
         /* ignore */
       }
@@ -68,7 +68,7 @@ export function MixerApp() {
 
   function connected(kind: WalletKind) {
     // Always connect at 0; the presenter sets a balance from the controls.
-    setWallet({ address: randAddress(), balance: 0 });
+    setWallet({ address: USER_ADDRESS, balance: 0 });
     closePicker();
     toast(`${WALLET_OPTIONS.find((o) => o.id === kind)?.name ?? "Wallet"} connected`);
   }
@@ -177,7 +177,7 @@ export function MixerApp() {
     setEvents([]);
     setMixes(seedMixHistory());
     try {
-      localStorage.removeItem("tornado-mixes");
+      localStorage.removeItem("tornado-mixes-v2");
     } catch {
       /* ignore */
     }
