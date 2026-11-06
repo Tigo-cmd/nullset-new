@@ -16,7 +16,7 @@ export function StatsCard({ pools, denom, onDenomChange }: { pools: Record<Denom
         <h2 className="flex items-center gap-2 text-base font-bold">
           <Activity className="size-4 text-ns-teal" /> Statistics
         </h2>
-        <div className="flex gap-1 rounded-xl bg-ns-bg/60 p-1" role="tablist" aria-label="Pool">
+        <div className="flex flex-wrap gap-1 rounded-xl bg-ns-bg/60 p-1" role="tablist" aria-label="Pool">
           {DENOMS.map((d) => (
             <button
               key={d}

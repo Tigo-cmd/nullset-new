@@ -26,7 +26,7 @@ export function MixerApp() {
   const [wallet, setWallet] = useState<DemoWallet | null>(null);
   const [connecting, setConnecting] = useState(false);
   const [pools, setPools] = useState<Record<Denom, Pool>>(seedPools);
-  const [denom, setDenom] = useState<Denom>("1");
+  const [denom, setDenom] = useState<Denom>("10");
   const [events, setEvents] = useState<LedgerEvent[]>([]);
   const [teacher, setTeacher] = useState(false);
   const [mixes, setMixes] = useState<MixRecord[]>(seedMixHistory);
@@ -54,7 +54,7 @@ export function MixerApp() {
   }
 
   function connected(kind: WalletKind) {
-    setWallet({ address: randAddress(), balance: 4.82 });
+    setWallet({ address: randAddress(), balance: 120 });
     closePicker();
     toast(`${WALLET_OPTIONS.find((o) => o.id === kind)?.name ?? "Wallet"} connected`);
   }

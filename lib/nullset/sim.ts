@@ -4,7 +4,7 @@
 // real SHA-256 (Web Crypto) so the note → commitment → nullifier flow is
 // genuine, but "deposits", "proofs" and "withdrawals" only change React state.
 
-export const DENOMS = ["0.1", "1", "10", "100"] as const;
+export const DENOMS = ["5", "10", "20", "30", "40", "50"] as const;
 export type Denom = (typeof DENOMS)[number];
 export const TOKEN = "ETH";
 
@@ -51,7 +51,7 @@ export function encodeNote(n: Note, prefix = "nullset"): string {
 }
 
 export function parseNote(raw: string): Note | null {
-  const m = raw.trim().match(/^[a-z0-9]{1,24}-(0\.1|1|10|100)eth-([0-9a-f]{62})([0-9a-f]{62})$/);
+  const m = raw.trim().match(/^[a-z0-9]{1,24}-(5|10|20|30|40|50)eth-([0-9a-f]{62})([0-9a-f]{62})$/);
   if (!m) return null;
   return { denom: m[1] as Denom, nullifier: m[2], secret: m[3] };
 }
@@ -88,8 +88,8 @@ export interface Pool {
   spent: string[];
 }
 
-const SEED_COUNTS: Record<Denom, number> = { "0.1": 1284, "1": 642, "10": 211, "100": 48 };
-const SEED_SPACING_MIN: Record<Denom, number> = { "0.1": 9, "1": 22, "10": 95, "100": 410 };
+const SEED_COUNTS: Record<Denom, number> = { "5": 412, "10": 286, "20": 154, "30": 97, "40": 63, "50": 41 };
+const SEED_SPACING_MIN: Record<Denom, number> = { "5": 25, "10": 40, "20": 70, "30": 110, "40": 160, "50": 220 };
 
 export function seedPools(): Record<Denom, Pool> {
   const rnd = mulberry32(20261106);
@@ -207,9 +207,9 @@ export function seedMixHistory(): MixRecord[] {
   const rnd = mulberry32(7331);
   const H = 3_600_000;
   const rows: [Denom, number, number, number, number][] = [
-    ["1", 26 * H, 74 * H, 598, 571],
-    ["0.1", 7 * H, 31 * H, 1271, 1240],
-    ["10", 52 * H, 140 * H, 209, 203],
+    ["10", 26 * H, 74 * H, 268, 251],
+    ["5", 7 * H, 31 * H, 405, 389],
+    ["50", 52 * H, 140 * H, 37, 33],
   ];
   return rows.map(([denom, wAge, dAge, setSize, leaf], i) => ({
     id: "seed" + i,

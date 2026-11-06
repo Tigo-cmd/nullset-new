@@ -102,7 +102,7 @@ export function PoolCard(props: PoolCardProps) {
 
 function DenomPicker({ value, onChange }: { value: Denom; onChange: (d: Denom) => void }) {
   return (
-    <div className="grid grid-cols-4 gap-2" role="radiogroup" aria-label="Amount">
+    <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Amount">
       {DENOMS.map((d) => (
         <button
           key={d}
@@ -440,7 +440,7 @@ function WithdrawTab({ wallet, pools, onWithdraw, toast, initialNote, teacher, f
         onChange={(e) => setNote(e.target.value)}
         rows={2}
         spellCheck={false}
-        placeholder={`${brandSlug(name)}-1eth-…`}
+        placeholder={`${brandSlug(name)}-10eth-…`}
         className="w-full resize-none rounded-xl border border-ns-border bg-ns-surface-2 px-4 py-3 font-mono text-xs leading-relaxed text-ns-text placeholder:text-ns-muted/60 focus:border-ns-teal focus:outline-none"
       />
       {noteError && <p className="mt-1.5 text-xs text-ns-danger">{noteError}</p>}
