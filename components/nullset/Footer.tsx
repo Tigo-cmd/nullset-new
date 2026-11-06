@@ -2,7 +2,6 @@
 
 import { BookOpen, ChevronDown, CodeXml, Globe, MessageCircle, Send } from "lucide-react";
 import { Logo } from "./Header";
-import { useBrand } from "@/lib/nullset/brand";
 
 export const NULLSET_VERSION = "0.1.0";
 
@@ -14,7 +13,6 @@ const LINKS = [
 ];
 
 export function Footer({ toast }: { toast: (m: string) => void }) {
-  const { name } = useBrand();
   return (
     <footer className="mt-16 border-t border-ns-border">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-[1.3fr_1fr_auto] md:items-start">
@@ -56,9 +54,6 @@ export function Footer({ toast }: { toast: (m: string) => void }) {
           </select>
           <ChevronDown className="pointer-events-none absolute right-3 size-4" />
         </label>
-      </div>
-      <div className="border-t border-ns-border py-5 text-center text-xs text-ns-muted">
-        © 2026 {name} · Educational simulation. No real wallets, funds or blockchain transactions.
       </div>
     </footer>
   );
