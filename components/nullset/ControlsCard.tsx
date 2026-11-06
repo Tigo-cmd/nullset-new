@@ -131,71 +131,118 @@ function HistoryControls({
   );
 }
 
+const fieldCls = "h-9 w-full rounded-lg border border-ns-border bg-ns-surface-2 px-2.5 text-xs text-ns-text focus:border-ns-violet focus:outline-none";
+
 function HistoryRow({ mix, onChange, onRemove }: { mix: MixRecord; onChange: (id: string, patch: Partial<MixRecord>) => void; onRemove: (id: string) => void }) {
   const ageMs = mix.depositAge ?? DAY;
-  const inDays = ageMs >= DAY;
-  const unit = inDays ? DAY : HOUR;
-  const whenValue = +(ageMs / unit).toFixed(1);
   const withdrawn = mix.withdrawAge != null || mix.withdrawAt != null;
 
-  const setWhen = (value: number, u: number) => {
-    const ms = Math.max(0, value) * u;
+  // Controlled drafts so values always display (the remount approach went blank on iOS).
+  const [unit, setUnit] = useState<"h" | "d">(ageMs >= DAY ? "d" : "h");
+  const unitMs = unit === "d" ? DAY : HOUR;
+  const [amountDraft, setAmountDraft] = useState(mix.denom);
+  const [whenDraft, setWhenDraft] = useState(String(+(ageMs / unitMs).toFixed(2)));
+  const [fromDraft, setFromDraft] = useState(mix.from);
+
+  const commitAmount = () => {
+    const n = Number(amountDraft);
+    if (Number.isFinite(n) && n > 0) onChange(mix.id, { denom: String(n) });
+    else setAmountDraft(mix.denom);
+  };
+  const commitWhen = (u: "h" | "d" = unit) => {
+    const ms = Math.max(0, Number(whenDraft) || 0) * (u === "d" ? DAY : HOUR);
     onChange(mix.id, { depositAge: ms, withdrawAge: withdrawn ? ms * 0.5 : undefined });
+  };
+  const changeUnit = (u: "h" | "d") => {
+    setUnit(u);
+    setWhenDraft(String(+(ageMs / (u === "d" ? DAY : HOUR)).toFixed(2)));
+  };
+  const commitFrom = () => {
+    const v = fromDraft.trim();
+    if (v) onChange(mix.id, { from: v });
+    else setFromDraft(mix.from);
   };
 
   return (
-    <div className="grid grid-cols-[1fr_1fr_auto_auto] items-center gap-2">
-      <label className="flex items-center gap-1 rounded-lg border border-ns-border bg-ns-surface-2 px-2">
-        <input
-          type="number"
-          min="0"
-          step="any"
-          defaultValue={mix.denom}
-          onBlur={(e) => {
-            const n = Number(e.target.value);
-            if (Number.isFinite(n) && n > 0) onChange(mix.id, { denom: String(n) });
-          }}
-          onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
-          className="h-8 w-full bg-transparent text-xs font-semibold focus:outline-none"
-          aria-label="Amount"
-        />
-        <span className="text-[10px] text-ns-muted">{TOKEN}</span>
-      </label>
-      <div className="flex items-center gap-1">
-        <input
-          type="number"
-          min="0"
-          step="any"
-          defaultValue={whenValue}
-          key={whenValue + "-" + unit}
-          onBlur={(e) => setWhen(Number(e.target.value), unit)}
-          onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
-          className="h-8 w-full rounded-lg border border-ns-border bg-ns-surface-2 px-2 text-xs focus:outline-none"
-          aria-label="How long ago"
-        />
-        <select
-          value={inDays ? "d" : "h"}
-          onChange={(e) => setWhen(whenValue, e.target.value === "d" ? DAY : HOUR)}
-          className="h-8 rounded-lg border border-ns-border bg-ns-surface-2 px-1 text-xs focus:outline-none"
-          aria-label="Unit"
-        >
-          <option value="h">hrs ago</option>
-          <option value="d">days ago</option>
-        </select>
+    <div className="rounded-xl border border-ns-border bg-ns-surface-2/60 p-3">
+      <div className="mb-2 flex items-center justify-between">
+        <span className="text-[11px] font-semibold text-ns-muted">Entry</span>
+        <button onClick={() => onRemove(mix.id)} aria-label="Delete entry" className="grid size-7 place-items-center rounded-lg border border-ns-border text-ns-muted hover:text-ns-danger">
+          <Trash2 className="size-3.5" />
+        </button>
       </div>
-      <select
-        value={withdrawn ? "w" : "p"}
-        onChange={(e) => onChange(mix.id, { withdrawAge: e.target.value === "w" ? ageMs * 0.5 : undefined })}
-        className="h-8 rounded-lg border border-ns-border bg-ns-surface-2 px-1 text-xs focus:outline-none"
-        aria-label="Status"
-      >
-        <option value="w">Withdrawn</option>
-        <option value="p">In pool</option>
-      </select>
-      <button onClick={() => onRemove(mix.id)} aria-label="Delete entry" className="grid size-8 place-items-center rounded-lg border border-ns-border text-ns-muted hover:text-ns-danger">
-        <Trash2 className="size-3.5" />
-      </button>
+      <div className="grid grid-cols-2 gap-2">
+        <Labeled label={`Amount (${TOKEN})`}>
+          <input
+            type="number"
+            inputMode="decimal"
+            min="0"
+            step="any"
+            value={amountDraft}
+            onChange={(e) => setAmountDraft(e.target.value)}
+            onBlur={commitAmount}
+            onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+            className={fieldCls}
+            aria-label="Amount"
+          />
+        </Labeled>
+        <Labeled label="Status">
+          <select
+            value={withdrawn ? "w" : "p"}
+            onChange={(e) => onChange(mix.id, { withdrawAge: e.target.value === "w" ? ageMs * 0.5 : undefined })}
+            className={fieldCls}
+            aria-label="Status"
+          >
+            <option value="w">Withdrawn</option>
+            <option value="p">In pool</option>
+          </select>
+        </Labeled>
+        <Labeled label="How long ago">
+          <input
+            type="number"
+            inputMode="decimal"
+            min="0"
+            step="any"
+            value={whenDraft}
+            onChange={(e) => setWhenDraft(e.target.value)}
+            onBlur={() => commitWhen()}
+            onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+            className={fieldCls}
+            aria-label="How long ago"
+          />
+        </Labeled>
+        <Labeled label="Unit">
+          <select value={unit} onChange={(e) => changeUnit(e.target.value as "h" | "d")} className={fieldCls} aria-label="Unit">
+            <option value="h">hours ago</option>
+            <option value="d">days ago</option>
+          </select>
+        </Labeled>
+      </div>
+      <div className="mt-2">
+        <Labeled label="From address">
+          <input
+            type="text"
+            spellCheck={false}
+            value={fromDraft}
+            onChange={(e) => setFromDraft(e.target.value)}
+            onBlur={commitFrom}
+            onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+            placeholder="0x…"
+            className={`${fieldCls} font-mono`}
+            aria-label="From address"
+          />
+        </Labeled>
+      </div>
     </div>
+  );
+}
+
+function Labeled({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-[10px] text-ns-muted">{label}</span>
+      {children}
+    </label>
   );
 }
 
