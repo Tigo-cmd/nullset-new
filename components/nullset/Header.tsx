@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { BookOpen, Menu, Wallet, X } from "lucide-react";
 import { Button } from "./ui";
-import { shorten, TOKEN } from "@/lib/nullset/sim";
+import { formatUsd, shorten, TOKEN } from "@/lib/nullset/sim";
 import { DEFAULT_BRAND, useBrand } from "@/lib/nullset/brand";
 
 export interface DemoWallet {
@@ -45,11 +45,14 @@ function WalletButton({ wallet, connecting, onConnect, onDisconnect, full }: Hea
   }
   return (
     <div className={`flex items-center gap-2 ${full ? "w-full" : ""}`}>
-      <div className="flex h-10 flex-1 items-center gap-2 rounded-xl border border-ns-border bg-ns-surface-2 px-3 text-sm">
+      <div className="flex h-11 flex-1 items-center gap-2 rounded-xl border border-ns-border bg-ns-surface-2 px-3 text-sm">
         <span className="size-2 rounded-full bg-ns-ok" aria-hidden />
         <span className="font-mono text-xs">{shorten(wallet.address)}</span>
-        <span className="ml-auto pl-2 font-semibold text-ns-teal">
-          {wallet.balance.toLocaleString(undefined, { maximumFractionDigits: 2 })} {TOKEN}
+        <span className="ml-auto flex flex-col items-end pl-2 leading-tight">
+          <span className="font-semibold text-ns-teal">
+            {wallet.balance.toLocaleString(undefined, { maximumFractionDigits: 2 })} {TOKEN}
+          </span>
+          <span className="text-[10px] text-ns-muted">{formatUsd(wallet.balance)}</span>
         </span>
       </div>
       <Button variant="ghost" size="md" onClick={onDisconnect} aria-label="Disconnect wallet" className="px-3">
@@ -90,8 +93,16 @@ export function Header(props: HeaderProps) {
             <WalletButton {...props} full />
           </div>
         </div>
+        {props.wallet && (
+          <div className="ml-auto flex flex-col items-end leading-tight md:hidden" aria-label="Wallet balance">
+            <span className="text-sm font-bold text-ns-teal">
+              {props.wallet.balance.toLocaleString(undefined, { maximumFractionDigits: 2 })} {TOKEN}
+            </span>
+            <span className="text-[10px] text-ns-muted">{formatUsd(props.wallet.balance)}</span>
+          </div>
+        )}
         <button
-          className="ml-auto grid size-10 place-items-center rounded-xl border border-ns-border md:hidden"
+          className={`${props.wallet ? "" : "ml-auto"} grid size-10 shrink-0 place-items-center rounded-xl border border-ns-border md:hidden`}
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           onClick={() => setOpen((o) => !o)}

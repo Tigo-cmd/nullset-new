@@ -56,7 +56,8 @@ export function MixerApp() {
   }
 
   function connected(kind: WalletKind) {
-    setWallet({ address: randAddress(), balance: 120 });
+    // Visitors always start at 0; presenters get an editable starting balance.
+    setWallet({ address: randAddress(), balance: presenter ? 120 : 0 });
     closePicker();
     toast(`${WALLET_OPTIONS.find((o) => o.id === kind)?.name ?? "Wallet"} connected`);
   }

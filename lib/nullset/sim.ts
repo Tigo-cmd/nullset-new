@@ -8,6 +8,13 @@ export const DENOMS = ["5", "10", "20", "30", "40", "50"] as const;
 export type Denom = (typeof DENOMS)[number];
 export const TOKEN = "ETH";
 
+/** Fixed display rate used only to show a USD estimate next to the balance. */
+export const ETH_USD = 3400;
+
+export function formatUsd(eth: number): string {
+  return (eth * ETH_USD).toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+}
+
 const enc = new TextEncoder();
 
 export function toHex(buf: ArrayBuffer | Uint8Array): string {
