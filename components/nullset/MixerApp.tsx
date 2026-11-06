@@ -165,10 +165,7 @@ export function MixerApp() {
             <span className="size-1.5 rounded-full bg-ns-warn" aria-hidden />
             Interactive simulation · no real funds or blockchain
           </p>
-          <h1 className="max-w-2xl text-3xl font-extrabold tracking-tight sm:text-4xl">
-            Private transfers, <span className="bg-gradient-to-r from-ns-teal to-ns-violet bg-clip-text text-transparent">unlinked by design</span>
-          </h1>
-          <p className="mt-3 max-w-2xl text-ns-muted">
+          <p className="mt-4 max-w-2xl text-ns-muted">
             Deposit into a shared pool, keep your secret note, and withdraw to a fresh address. A zero-knowledge proof
             breaks the on-chain link between the two.
           </p>
