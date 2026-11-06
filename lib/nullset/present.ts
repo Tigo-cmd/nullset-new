@@ -10,12 +10,7 @@ let resolved: boolean | null = null;
 
 function compute(): boolean {
   try {
-    const url = new URL(window.location.href);
-    if (url.searchParams.has("present")) {
-      localStorage.setItem("nullset-present", "1");
-      return true;
-    }
-    return localStorage.getItem("nullset-present") === "1";
+    return new URL(window.location.href).searchParams.has("present");
   } catch {
     return false;
   }

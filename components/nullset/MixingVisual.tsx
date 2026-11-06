@@ -50,7 +50,7 @@ export function MixingVisual({ events, pools, denom, teacher, presenter, onTeach
   const inPool = events.filter((e) => e.denom === denom);
   const deposits: LedgerEvent[] = [
     ...inPool.filter((e) => e.kind === "deposit"),
-    ...inPoolMixes.map((m) => ({ id: m.id, kind: "deposit" as const, denom: m.denom, address: m.from, hash: "", at: 0, mine: true })),
+    ...(presenter ? inPoolMixes.map((m) => ({ id: m.id, kind: "deposit" as const, denom: m.denom, address: m.from, hash: "", at: 0, mine: true })) : []),
   ].slice(0, 4);
   const withdrawals = inPool.filter((e) => e.kind === "withdraw").slice(0, 4);
   // Only animate events that just happened.
@@ -61,7 +61,7 @@ export function MixingVisual({ events, pools, denom, teacher, presenter, onTeach
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="flex items-center gap-2 text-base font-bold">
-            <Shuffle className="size-4 text-ns-teal" /> Live pool: {orderAmount.toLocaleString(undefined, { maximumFractionDigits: 4 })} {TOKEN}
+            <Shuffle className="size-4 text-ns-teal" /> Live pool{presenter ? `: ${orderAmount.toLocaleString(undefined, { maximumFractionDigits: 4 })} ${TOKEN}` : ""}
           </h2>
           <p className="mt-1 max-w-xl text-sm text-ns-muted">
             Coins go in from many addresses and come out to new ones. Inside the pool every coin looks the same, and nothing records which one
@@ -136,20 +136,22 @@ export function MixingVisual({ events, pools, denom, teacher, presenter, onTeach
           </span>
         ))}
       </div>
-      <p className="mt-3 text-sm text-ns-muted">
-        {userAddress ? (
-          <>
-            <span className="font-mono font-semibold text-ns-text">{shorten(userAddress)}</span>, you
-          </>
-        ) : (
-          "You"
-        )}{" "}
-        currently have an ongoing order of{" "}
-        <span className="font-semibold text-ns-teal">
-          {orderAmount.toLocaleString(undefined, { maximumFractionDigits: 4 })} {TOKEN}
-        </span>{" "}
-        ({formatUsd(orderAmount, rate)}) which will be ready in some days from now.
-      </p>
+      {presenter && (
+        <p className="mt-3 text-sm text-ns-muted">
+          {userAddress ? (
+            <>
+              <span className="font-mono font-semibold text-ns-text">{shorten(userAddress)}</span>, you
+            </>
+          ) : (
+            "You"
+          )}{" "}
+          currently have an ongoing order of{" "}
+          <span className="font-semibold text-ns-teal">
+            {orderAmount.toLocaleString(undefined, { maximumFractionDigits: 4 })} {TOKEN}
+          </span>{" "}
+          ({formatUsd(orderAmount, rate)}) which will be ready in some days from now.
+        </p>
+      )}
     </section>
   );
 }
