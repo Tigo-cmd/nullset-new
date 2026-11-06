@@ -43,14 +43,14 @@ export function MixingVisual({ events, pools, denom, teacher, presenter, onTeach
   const inPoolMixes = mixes.filter((m) => m.withdrawAge == null && m.withdrawAt == null);
   const inPoolAmount = inPoolMixes.reduce((s, m) => s + Number(m.denom), 0);
   const orderAmount = inPoolAmount || mixingAmount || 14.2;
-  const userAddress = wallet?.address ?? inPoolMixes[0]?.from ?? USER_ADDRESS;
+  const userAddress = wallet?.address ?? USER_ADDRESS;
   const dots = Math.min(MAX_DOTS, pool.count);
   const mineSlots = new Set(Object.values(pool.leaves).map((leaf) => leaf % dots));
 
   const inPool = events.filter((e) => e.denom === denom);
   const deposits: LedgerEvent[] = [
+    ...(presenter ? [{ id: "user-dep", kind: "deposit" as const, denom, address: userAddress, hash: "", at: 0, mine: true }] : []),
     ...inPool.filter((e) => e.kind === "deposit"),
-    ...(presenter ? inPoolMixes.map((m) => ({ id: m.id, kind: "deposit" as const, denom: m.denom, address: m.from, hash: "", at: 0, mine: true })) : []),
   ].slice(0, 4);
   const withdrawals = inPool.filter((e) => e.kind === "withdraw").slice(0, 4);
   // Only animate events that just happened.
