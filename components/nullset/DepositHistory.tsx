@@ -29,7 +29,7 @@ export function DepositHistory({ events, mixes }: { events: LedgerEvent[]; mixes
     ...mixes
       .filter((m) => !m.depositAt)
       .sort((a, b) => (a.depositAge ?? 0) - (b.depositAge ?? 0))
-      .map((m) => ({ id: "d-" + m.id, denom: m.denom, from: m.from, leaf: m.leaf, ageAtLoad: m.depositAge, withdrawn: true, earlier: true })),
+      .map((m) => ({ id: "d-" + m.id, denom: m.denom, from: m.from, leaf: m.leaf, ageAtLoad: m.depositAge, withdrawn: m.withdrawAge != null || m.withdrawAt != null, earlier: true })),
   ];
 
   const total = rows.reduce((s, r) => s + Number(r.denom), 0);

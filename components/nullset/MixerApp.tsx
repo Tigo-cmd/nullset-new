@@ -14,7 +14,7 @@ import { DepositHistory } from "./DepositHistory";
 import { brandStyle, useBrand } from "@/lib/nullset/brand";
 import { usePresenter } from "@/lib/nullset/present";
 import { WalletModal, WALLET_OPTIONS, type WalletKind } from "./WalletModal";
-import { clock, randAddress, randHex, seedMixHistory, seedPools, sha256, type Denom, type LedgerEvent, type MixRecord, type Pool } from "@/lib/nullset/sim";
+import { clock, randAddress, randHex, seedMixHistory, seedPools, sha256, makeExampleMix, type Denom, type LedgerEvent, type MixRecord, type Pool } from "@/lib/nullset/sim";
 
 const HOW = [
   { icon: KeyRound, title: "Make a note", body: "Your browser creates a random nullifier and secret. Their hash, the commitment, is what gets deposited." },
@@ -169,6 +169,17 @@ export function MixerApp() {
     setControls({ feeRate: 0.005, speed: 1 });
     toast("Session reset");
   }
+  // Presenter history editing (teacher view).
+  function editMix(id: string, patch: Partial<MixRecord>) {
+    setMixes((list) => list.map((m) => (m.id === id ? { ...m, ...patch } : m)));
+  }
+  function addMix() {
+    setMixes((list) => [makeExampleMix("10", 24 * 3_600_000, true), ...list]);
+  }
+  function removeMix(id: string) {
+    setMixes((list) => list.filter((m) => m.id !== id));
+  }
+
 
   return (
     <div id="top" className="ns-shell flex min-h-screen flex-col" style={brandStyle(brand)}>
@@ -195,6 +206,10 @@ export function MixerApp() {
             onControlsChange={setControls}
             pools={pools}
             onPoolSizeChange={setPoolSize}
+            mixes={mixes}
+            onHistoryChange={editMix}
+            onHistoryAdd={addMix}
+            onHistoryRemove={removeMix}
             onReset={reset}
           />
         )}

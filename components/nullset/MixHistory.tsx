@@ -23,6 +23,7 @@ export function MixHistory({ mixes }: { mixes: MixRecord[] }) {
       <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {mixes.map((m) => {
           const dAge = age(m.depositAt, m.depositAge);
+          const withdrawn = m.withdrawAt != null || m.withdrawAge != null;
           const wAge = age(m.withdrawAt, m.withdrawAge);
           return (
             <article key={m.id} className="rounded-2xl border border-ns-border bg-ns-surface-2 p-4">
@@ -40,14 +41,20 @@ export function MixHistory({ mixes }: { mixes: MixRecord[] }) {
                   <span className="text-ns-muted">{now ? formatAgo(dAge) : "…"}</span>
                 </li>
                 <li className="ml-[3px] border-l border-dashed border-ns-border-strong py-1 pl-4 text-ns-muted">
-                  {now ? formatDuration(dAge - wAge) : "…"} in the pool · leaf #{m.leaf.toLocaleString()}
+                  {!withdrawn ? "still being mixed" : now ? `${formatDuration(dAge - wAge)} in the pool` : "…"} · leaf #{m.leaf.toLocaleString()}
                 </li>
-                <li className="flex items-center justify-between gap-3">
-                  <span className="flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-ns-violet" /> Out to <span className="font-mono">{shorten(m.to)}</span>
-                  </span>
-                  <span className="text-ns-muted">{now ? formatAgo(wAge) : "…"}</span>
-                </li>
+                {withdrawn ? (
+                  <li className="flex items-center justify-between gap-3">
+                    <span className="flex items-center gap-2">
+                      <span className="size-2 rounded-full bg-ns-violet" /> Out to <span className="font-mono">{shorten(m.to)}</span>
+                    </span>
+                    <span className="text-ns-muted">{now ? formatAgo(wAge) : "…"}</span>
+                  </li>
+                ) : (
+                  <li className="flex items-center gap-2">
+                    <span className="size-2 rounded-full bg-ns-teal/50" /> <span className="text-ns-teal">In pool</span>
+                  </li>
+                )}
               </ol>
               <p className="mt-3 border-t border-ns-border pt-3 text-xs text-ns-muted">
                 Hidden among <b className="text-ns-text">{m.setSize.toLocaleString()}</b> equal deposits

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Palette, RotateCcw } from "lucide-react";
+import { Clock, Palette, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { Button } from "./ui";
-import { DENOMS, TOKEN, type Denom, type Pool } from "@/lib/nullset/sim";
+import { DENOMS, TOKEN, type Denom, type MixRecord, type Pool } from "@/lib/nullset/sim";
 import { BRAND_PRESETS, brandStore, DEFAULT_BRAND, isHex, useBrand } from "@/lib/nullset/brand";
 
 export interface Controls {
@@ -18,6 +18,10 @@ interface ControlsCardProps {
   onControlsChange: (c: Controls) => void;
   pools: Record<Denom, Pool>;
   onPoolSizeChange: (d: Denom, count: number) => void;
+  mixes: MixRecord[];
+  onHistoryChange: (id: string, patch: Partial<MixRecord>) => void;
+  onHistoryAdd: () => void;
+  onHistoryRemove: (id: string) => void;
   onReset: () => void;
 }
 
@@ -82,7 +86,116 @@ export function ControlsCard(p: ControlsCardProps) {
         </Field>
       </div>
       <BrandingControls />
+      <HistoryControls mixes={p.mixes} onChange={p.onHistoryChange} onAdd={p.onHistoryAdd} onRemove={p.onHistoryRemove} />
     </section>
+  );
+}
+
+const HOUR = 3_600_000;
+const DAY = 24 * HOUR;
+
+function HistoryControls({
+  mixes,
+  onChange,
+  onAdd,
+  onRemove,
+}: {
+  mixes: MixRecord[];
+  onChange: (id: string, patch: Partial<MixRecord>) => void;
+  onAdd: () => void;
+  onRemove: (id: string) => void;
+}) {
+  // Only the seeded / presenter-added examples are editable (not live-session mixes).
+  const examples = mixes.filter((m) => !m.depositAt);
+  return (
+    <div className="mt-4 rounded-2xl border border-ns-border bg-ns-surface-2/60 p-3.5">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <p className="flex items-center gap-1.5 text-xs font-semibold text-ns-muted">
+          <Clock className="size-3.5" /> Example history
+        </p>
+        <button onClick={onAdd} className="inline-flex items-center gap-1 text-xs font-semibold text-ns-teal hover:underline">
+          <Plus className="size-3.5" /> Add entry
+        </button>
+      </div>
+      {examples.length === 0 ? (
+        <p className="text-xs text-ns-muted">No example entries. Add one to pre-fill the history for your presentation.</p>
+      ) : (
+        <div className="space-y-2">
+          {examples.map((m) => (
+            <HistoryRow key={m.id} mix={m} onChange={onChange} onRemove={onRemove} />
+          ))}
+        </div>
+      )}
+      <p className="mt-2 text-[11px] text-ns-muted">Edits show in Deposit history and Previous mixes. They reset with the session.</p>
+    </div>
+  );
+}
+
+function HistoryRow({ mix, onChange, onRemove }: { mix: MixRecord; onChange: (id: string, patch: Partial<MixRecord>) => void; onRemove: (id: string) => void }) {
+  const ageMs = mix.depositAge ?? DAY;
+  const inDays = ageMs >= DAY;
+  const unit = inDays ? DAY : HOUR;
+  const whenValue = +(ageMs / unit).toFixed(1);
+  const withdrawn = mix.withdrawAge != null || mix.withdrawAt != null;
+
+  const setWhen = (value: number, u: number) => {
+    const ms = Math.max(0, value) * u;
+    onChange(mix.id, { depositAge: ms, withdrawAge: withdrawn ? ms * 0.5 : undefined });
+  };
+
+  return (
+    <div className="grid grid-cols-[1fr_1fr_auto_auto] items-center gap-2">
+      <label className="flex items-center gap-1 rounded-lg border border-ns-border bg-ns-surface-2 px-2">
+        <input
+          type="number"
+          min="0"
+          step="any"
+          defaultValue={mix.denom}
+          onBlur={(e) => {
+            const n = Number(e.target.value);
+            if (Number.isFinite(n) && n > 0) onChange(mix.id, { denom: String(n) });
+          }}
+          onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+          className="h-8 w-full bg-transparent text-xs font-semibold focus:outline-none"
+          aria-label="Amount"
+        />
+        <span className="text-[10px] text-ns-muted">{TOKEN}</span>
+      </label>
+      <div className="flex items-center gap-1">
+        <input
+          type="number"
+          min="0"
+          step="any"
+          defaultValue={whenValue}
+          key={whenValue + "-" + unit}
+          onBlur={(e) => setWhen(Number(e.target.value), unit)}
+          onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+          className="h-8 w-full rounded-lg border border-ns-border bg-ns-surface-2 px-2 text-xs focus:outline-none"
+          aria-label="How long ago"
+        />
+        <select
+          value={inDays ? "d" : "h"}
+          onChange={(e) => setWhen(whenValue, e.target.value === "d" ? DAY : HOUR)}
+          className="h-8 rounded-lg border border-ns-border bg-ns-surface-2 px-1 text-xs focus:outline-none"
+          aria-label="Unit"
+        >
+          <option value="h">hrs ago</option>
+          <option value="d">days ago</option>
+        </select>
+      </div>
+      <select
+        value={withdrawn ? "w" : "p"}
+        onChange={(e) => onChange(mix.id, { withdrawAge: e.target.value === "w" ? ageMs * 0.5 : undefined })}
+        className="h-8 rounded-lg border border-ns-border bg-ns-surface-2 px-1 text-xs focus:outline-none"
+        aria-label="Status"
+      >
+        <option value="w">Withdrawn</option>
+        <option value="p">In pool</option>
+      </select>
+      <button onClick={() => onRemove(mix.id)} aria-label="Delete entry" className="grid size-8 place-items-center rounded-lg border border-ns-border text-ns-muted hover:text-ns-danger">
+        <Trash2 className="size-3.5" />
+      </button>
+    </div>
   );
 }
 

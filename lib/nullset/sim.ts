@@ -243,4 +243,20 @@ export function formatDuration(ms: number): string {
   return `${Math.round(h / 24)} days`;
 }
 
+
+/** Build an editable example mix for the presenter's history. */
+export function makeExampleMix(denom: Denom, depositAgeMs: number, withdrawn: boolean): MixRecord {
+  const setSize = 60 + Math.floor(Math.random() * 320);
+  return {
+    id: "ex" + randHex(6),
+    denom,
+    from: randAddress(),
+    to: randAddress(),
+    depositAge: depositAgeMs,
+    withdrawAge: withdrawn ? Math.max(0, depositAgeMs * 0.5) : undefined,
+    setSize,
+    leaf: 1 + Math.floor(Math.random() * setSize),
+  };
+}
+
 export const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
