@@ -41,8 +41,7 @@ export function MixingVisual({ events, pools, denom, teacher, presenter, onTeach
   const mixingCount = Math.max(0, myDeposits - myWithdrawals);
   const mixingAmount = mixingCount * Number(denom);
   const inPoolMixes = mixes.filter((m) => m.withdrawAge == null && m.withdrawAt == null);
-  const inPoolAmount = inPoolMixes.reduce((s, m) => s + Number(m.denom), 0);
-  const orderAmount = inPoolAmount || mixingAmount || 14.2;
+  const orderAmount = 14.2;
   const userAddress = wallet?.address ?? USER_ADDRESS;
   const dots = Math.min(MAX_DOTS, pool.count);
   const mineSlots = new Set(Object.values(pool.leaves).map((leaf) => leaf % dots));

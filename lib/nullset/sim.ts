@@ -215,9 +215,11 @@ export const USER_ADDRESS = "0x21d0b6c8c57a20eb67c43657695bab99bd0795ce";
 /** A few earlier mixes so the history isn't empty on first load (deterministic for SSR). */
 export function seedMixHistory(): MixRecord[] {
   const rnd = mulberry32(7331);
+  const M = 60_000;
   const H = 3_600_000;
   const D = 24 * H;
   const rows: [Denom, number | undefined, number, number, number][] = [
+    ["0.753", undefined, 1 * M, 185, 180],
     ["14.2", undefined, 22 * H, 184, 179],
     ["85", 8 * D, 10 * D, 148, 139],
     ["130", 14 * D, 16 * D, 91, 84],
@@ -228,7 +230,7 @@ export function seedMixHistory(): MixRecord[] {
   return rows.map(([denom, wAge, dAge, setSize, leaf], i) => ({
     id: "seed" + i,
     denom,
-    from: i === 0 ? USER_ADDRESS : "0x" + seededHex(rnd, 20),
+    from: i <= 1 ? USER_ADDRESS : "0x" + seededHex(rnd, 20),
     to: "0x" + seededHex(rnd, 20),
     depositAge: dAge,
     withdrawAge: wAge,

@@ -29,10 +29,10 @@ export function MixerApp() {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("tornado-mixes-v4");
+      const saved = localStorage.getItem("tornado-mixes-v5");
       if (saved) setMixes(JSON.parse(saved));
       if (new URL(window.location.href).searchParams.has("present")) {
-        setWallet((w) => w ?? { address: USER_ADDRESS, balance: 0 });
+        setWallet((w) => w ?? { address: USER_ADDRESS, balance: 14.2 });
       }
     } catch {
       /* ignore */
@@ -43,7 +43,7 @@ export function MixerApp() {
     setMixes((list) => {
       const next = fn(list);
       try {
-        localStorage.setItem("tornado-mixes-v4", JSON.stringify(next));
+        localStorage.setItem("tornado-mixes-v5", JSON.stringify(next));
       } catch {
         /* ignore */
       }
@@ -70,8 +70,7 @@ export function MixerApp() {
   }
 
   function connected(kind: WalletKind) {
-    // Always connect at 0; the presenter sets a balance from the controls.
-    setWallet({ address: USER_ADDRESS, balance: 0 });
+    setWallet({ address: USER_ADDRESS, balance: presenter ? 14.2 : 0 });
     closePicker();
     toast(`${WALLET_OPTIONS.find((o) => o.id === kind)?.name ?? "Wallet"} connected`);
   }
@@ -180,7 +179,7 @@ export function MixerApp() {
     setEvents([]);
     setMixes(seedMixHistory());
     try {
-      localStorage.removeItem("tornado-mixes-v4");
+      localStorage.removeItem("tornado-mixes-v5");
     } catch {
       /* ignore */
     }
