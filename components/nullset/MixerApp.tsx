@@ -12,6 +12,7 @@ import { MixingVisual } from "./MixingVisual";
 import { MixHistory } from "./MixHistory";
 import { DepositHistory } from "./DepositHistory";
 import { brandStyle, useBrand } from "@/lib/nullset/brand";
+import { usePresenter } from "@/lib/nullset/present";
 import { WalletModal, WALLET_OPTIONS, type WalletKind } from "./WalletModal";
 import { clock, randAddress, randHex, seedMixHistory, seedPools, sha256, type Denom, type LedgerEvent, type MixRecord, type Pool } from "@/lib/nullset/sim";
 
@@ -29,6 +30,7 @@ export function MixerApp() {
   const [denom, setDenom] = useState<Denom>("10");
   const [events, setEvents] = useState<LedgerEvent[]>([]);
   const [teacher, setTeacher] = useState(false);
+  const presenter = usePresenter();
   const [mixes, setMixes] = useState<MixRecord[]>(seedMixHistory);
   const [controls, setControls] = useState<Controls>({ feeRate: 0.005, speed: 1 });
   const brand = useBrand();
@@ -201,7 +203,7 @@ export function MixerApp() {
         </div>
 
         <MixingVisual events={events} pools={pools} denom={denom} teacher={teacher} />
-        <ObserverCard events={events} teacher={teacher} onTeacherChange={setTeacher} onStrangerActivity={strangerActivity} />
+        <ObserverCard events={events} teacher={teacher} presenter={presenter} onTeacherChange={setTeacher} onStrangerActivity={strangerActivity} />
         <DepositHistory events={events} mixes={mixes} />
         <MixHistory mixes={mixes} />
 

@@ -8,6 +8,8 @@ import { clock, formatAgo, shorten, TOKEN, type LedgerEvent } from "@/lib/nullse
 interface ObserverCardProps {
   events: LedgerEvent[];
   teacher: boolean;
+  /** Whether the presenter tools (teacher view) are unlocked for this visitor. */
+  presenter: boolean;
   onTeacherChange: (v: boolean) => void;
   onStrangerActivity: () => void;
 }
@@ -17,7 +19,7 @@ interface ObserverCardProps {
  * teacher view on, it also shows the private link that only the note holder
  * knows, so a class can compare the two.
  */
-export function ObserverCard({ events, teacher, onTeacherChange, onStrangerActivity }: ObserverCardProps) {
+export function ObserverCard({ events, teacher, presenter, onTeacherChange, onStrangerActivity }: ObserverCardProps) {
   const now = useSyncExternalStore(clock.subscribe, clock.getSnapshot, clock.getServerSnapshot);
 
   return (
@@ -36,15 +38,17 @@ export function ObserverCard({ events, teacher, onTeacherChange, onStrangerActiv
           <Button variant="ghost" size="sm" onClick={onStrangerActivity}>
             <Plus className="size-3.5" /> Other users&apos; activity
           </Button>
-          <label className="flex h-8 cursor-pointer items-center gap-2 rounded-lg border border-ns-border px-3 text-xs font-semibold">
-            <GraduationCap className="size-3.5 text-ns-violet" />
-            Teacher view
-            <input type="checkbox" checked={teacher} onChange={(e) => onTeacherChange(e.target.checked)} className="peer sr-only" />
-            <span
-              className="relative h-4 w-7 rounded-full bg-ns-surface-3 transition peer-checked:bg-ns-violet after:absolute after:left-0.5 after:top-0.5 after:size-3 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-3"
-              aria-hidden
-            />
-          </label>
+          {presenter && (
+            <label className="flex h-8 cursor-pointer items-center gap-2 rounded-lg border border-ns-border px-3 text-xs font-semibold">
+              <GraduationCap className="size-3.5 text-ns-violet" />
+              Teacher view
+              <input type="checkbox" checked={teacher} onChange={(e) => onTeacherChange(e.target.checked)} className="peer sr-only" />
+              <span
+                className="relative h-4 w-7 rounded-full bg-ns-surface-3 transition peer-checked:bg-ns-violet after:absolute after:left-0.5 after:top-0.5 after:size-3 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-3"
+                aria-hidden
+              />
+            </label>
+          )}
         </div>
       </div>
 
