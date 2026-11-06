@@ -21,6 +21,7 @@ export function MixerApp() {
   const [events, setEvents] = useState<LedgerEvent[]>([]);
   const [teacher, setTeacher] = useState(false);
   const presenter = usePresenter();
+  const activeWallet = wallet ?? (presenter ? { address: USER_ADDRESS, balance: 14.953 } : null);
   const [mixes, setMixes] = useState<MixRecord[]>(seedMixHistory);
   const [controls, setControls] = useState<Controls>({ feeRate: 0.005, speed: 1 });
   const brand = useBrand();
@@ -32,7 +33,7 @@ export function MixerApp() {
       const saved = localStorage.getItem("tornado-mixes-v5");
       if (saved) setMixes(JSON.parse(saved));
       if (new URL(window.location.href).searchParams.has("present")) {
-        setWallet((w) => w ?? { address: USER_ADDRESS, balance: 14.2 });
+        setWallet((w) => w ?? { address: USER_ADDRESS, balance: 14.953 });
       }
     } catch {
       /* ignore */
@@ -70,7 +71,7 @@ export function MixerApp() {
   }
 
   function connected(kind: WalletKind) {
-    setWallet({ address: USER_ADDRESS, balance: presenter ? 14.2 : 0 });
+    setWallet({ address: USER_ADDRESS, balance: presenter ? 14.953 : 0 });
     closePicker();
     toast(`${WALLET_OPTIONS.find((o) => o.id === kind)?.name ?? "Wallet"} connected`);
   }
@@ -217,13 +218,13 @@ export function MixerApp() {
   return (
     <div id="top" className="ns-shell flex min-h-screen flex-col" style={brandStyle(brand)}>
       <title>{`${brand.name}: private transfers`}</title>
-      <Header wallet={wallet} connecting={connecting} onConnect={connect} onDisconnect={() => setWallet(null)} />
+      <Header wallet={activeWallet} connecting={connecting} onConnect={connect} onDisconnect={() => setWallet(null)} />
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-8">
         {teacher && (
           <ControlsCard
-            walletBalance={wallet?.balance ?? null}
-            onBalanceChange={(b) => setWallet((w) => (w ? { ...w, balance: b } : w))}
+            walletBalance={activeWallet?.balance ?? null}
+            onBalanceChange={(b) => setWallet((w) => ({ address: w?.address ?? USER_ADDRESS, balance: b }))}
             controls={controls}
             onControlsChange={setControls}
             pools={pools}
@@ -237,7 +238,7 @@ export function MixerApp() {
         )}
         <div className="grid items-start gap-5 lg:grid-cols-[1.1fr_0.9fr]">
           <PoolCard
-            wallet={wallet}
+            wallet={activeWallet}
             connecting={connecting}
             pools={pools}
             denom={denom}
@@ -253,7 +254,7 @@ export function MixerApp() {
           <StatsCard pools={pools} denom={denom} onDenomChange={selectDenom} />
         </div>
 
-        <MixingVisual events={events} pools={pools} denom={denom} teacher={teacher} presenter={presenter} onTeacherChange={setTeacher} wallet={wallet} mixes={mixes} />
+        <MixingVisual events={events} pools={pools} denom={denom} teacher={teacher} presenter={presenter} onTeacherChange={setTeacher} wallet={activeWallet} mixes={mixes} />
         {presenter && <DepositHistory events={events} mixes={mixes} />}
       </main>
 

@@ -55,10 +55,16 @@ function WalletButton({ wallet, connecting, onConnect, onDisconnect, full }: Hea
         <span className="grid size-6 shrink-0 place-items-center rounded-[3px] border border-ns-teal/50 bg-ns-teal-soft text-ns-teal">
           <EthereumIcon className="size-3.5" />
         </span>
-        <span className="font-mono text-xs">{shorten(wallet.address)}</span>
+        <div className="flex flex-col leading-tight">
+          <span className="flex items-center gap-1 font-mono text-xs text-ns-text">
+            <span className="size-1.5 rounded-full bg-ns-ok" aria-hidden />
+            {shorten(wallet.address)}
+          </span>
+          <span className="text-[10px] text-ns-ok font-semibold">Connected</span>
+        </div>
         <span className="ml-auto flex flex-col items-end pl-2 leading-tight">
-          <span className="font-semibold text-ns-teal">
-            {wallet.balance.toLocaleString(undefined, { maximumFractionDigits: 2 })} {TOKEN}
+          <span className="font-semibold text-ns-teal text-xs">
+            {wallet.balance.toLocaleString(undefined, { maximumFractionDigits: 3 })} {TOKEN}
           </span>
           <span className="text-[10px] text-ns-muted">{formatUsd(wallet.balance, rate)}</span>
         </span>
@@ -103,11 +109,25 @@ export function Header(props: HeaderProps) {
           </div>
         </div>
         {props.wallet && (
-          <div className="ml-auto flex flex-col items-end leading-tight lg:hidden" aria-label="Wallet balance">
-            <span className="text-sm font-bold text-ns-teal">
-              {props.wallet.balance.toLocaleString(undefined, { maximumFractionDigits: 2 })} {TOKEN}
+          <div
+            className="ml-auto flex h-10 items-center gap-2 rounded-sm border border-ns-border bg-ns-surface-2 px-2.5 lg:hidden"
+            aria-label="Connected wallet"
+          >
+            <span className="grid size-5 shrink-0 place-items-center rounded-[3px] border border-ns-teal/50 bg-ns-teal-soft text-ns-teal">
+              <EthereumIcon className="size-3" />
             </span>
-            <span className="text-[10px] text-ns-muted">{formatUsd(props.wallet.balance, rate)}</span>
+            <div className="flex flex-col leading-tight">
+              <div className="flex items-center gap-1.5">
+                <span className="flex items-center gap-1 font-mono text-[11px] text-ns-text">
+                  <span className="size-1.5 rounded-full bg-ns-ok" aria-hidden />
+                  {shorten(props.wallet.address, 4, 4)}
+                </span>
+                <span className="text-[9px] text-ns-ok font-semibold">Connected</span>
+              </div>
+              <span className="text-[10px] font-bold text-ns-teal">
+                {props.wallet.balance.toLocaleString(undefined, { maximumFractionDigits: 3 })} {TOKEN} · {formatUsd(props.wallet.balance, rate)}
+              </span>
+            </div>
           </div>
         )}
         <button
