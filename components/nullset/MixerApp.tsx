@@ -231,7 +231,7 @@ export function MixerApp() {
           <StatsCard pools={pools} denom={denom} onDenomChange={selectDenom} />
         </div>
 
-        <MixingVisual events={events} pools={pools} denom={denom} teacher={teacher} />
+        <MixingVisual events={events} pools={pools} denom={denom} teacher={teacher} wallet={wallet} mixes={mixes} />
         <ObserverCard events={events} teacher={teacher} presenter={presenter} onTeacherChange={setTeacher} onStrangerActivity={strangerActivity} />
         <DepositHistory events={events} mixes={mixes} />
         <MixHistory mixes={mixes} />

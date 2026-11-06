@@ -31,13 +31,6 @@ export function Logo() {
         <path d="M9 23 23 9" stroke={DEFAULT_BRAND.secondary} strokeWidth="2.4" strokeLinecap="round" />
       </svg>
       {name}
-      <span
-        title="Interactive simulation: no real funds or blockchain"
-        className="inline-flex items-center gap-1 rounded-sm border border-ns-border bg-ns-surface-2 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ns-muted"
-      >
-        <span className="size-1.5 rounded-full bg-ns-warn" aria-hidden />
-        Simulation
-      </span>
     </a>
   );
 }

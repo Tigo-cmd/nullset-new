@@ -2,14 +2,17 @@
 
 import { useSyncExternalStore } from "react";
 import { ArrowRight, Shuffle } from "lucide-react";
-import { clock, formatUsd, shorten, TOKEN, type Denom, type LedgerEvent, type Pool } from "@/lib/nullset/sim";
+import { clock, formatUsd, shorten, TOKEN, type Denom, type LedgerEvent, type MixRecord, type Pool } from "@/lib/nullset/sim";
 import { useEthUsd } from "@/lib/nullset/price";
+import type { DemoWallet } from "./Header";
 
 interface MixingVisualProps {
   events: LedgerEvent[];
   pools: Record<Denom, Pool>;
   denom: Denom;
   teacher: boolean;
+  wallet: DemoWallet | null;
+  mixes: MixRecord[];
 }
 
 const MAX_DOTS = 48;
@@ -24,7 +27,7 @@ const frac = (i: number, salt: number) => {
  * Animated picture of the pool: coins fly in from depositors, orbit together
  * where they all look the same, and fly out to new addresses.
  */
-export function MixingVisual({ events, pools, denom, teacher }: MixingVisualProps) {
+export function MixingVisual({ events, pools, denom, teacher, wallet, mixes }: MixingVisualProps) {
   const now = useSyncExternalStore(clock.subscribe, clock.getSnapshot, clock.getServerSnapshot);
   const rate = useEthUsd();
   const pool = pools[denom];
@@ -35,11 +38,18 @@ export function MixingVisual({ events, pools, denom, teacher }: MixingVisualProp
   const myWithdrawals = events.filter((e) => e.kind === "withdraw" && e.mine && e.denom === denom).length;
   const mixingCount = Math.max(0, myDeposits - myWithdrawals);
   const mixingAmount = mixingCount * Number(denom);
+  const inPoolMixes = mixes.filter((m) => m.withdrawAge == null && m.withdrawAt == null);
+  const inPoolAmount = inPoolMixes.reduce((s, m) => s + Number(m.denom), 0);
+  const orderAmount = inPoolAmount || mixingAmount || 14.2;
+  const userAddress = wallet?.address ?? inPoolMixes[0]?.from;
   const dots = Math.min(MAX_DOTS, pool.count);
   const mineSlots = new Set(Object.values(pool.leaves).map((leaf) => leaf % dots));
 
   const inPool = events.filter((e) => e.denom === denom);
-  const deposits = inPool.filter((e) => e.kind === "deposit").slice(0, 4);
+  const deposits: LedgerEvent[] = [
+    ...inPool.filter((e) => e.kind === "deposit"),
+    ...inPoolMixes.map((m) => ({ id: m.id, kind: "deposit" as const, denom: m.denom, address: m.from, hash: "", at: 0, mine: true })),
+  ].slice(0, 4);
   const withdrawals = inPool.filter((e) => e.kind === "withdraw").slice(0, 4);
   // Only animate events that just happened.
   const flights = now ? inPool.filter((e) => now - e.at < 9000).slice(0, 10) : [];
@@ -49,7 +59,7 @@ export function MixingVisual({ events, pools, denom, teacher }: MixingVisualProp
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="flex items-center gap-2 text-base font-bold">
-            <Shuffle className="size-4 text-ns-teal" /> Live pool: {denom} {TOKEN}
+            <Shuffle className="size-4 text-ns-teal" /> Live pool: {orderAmount.toLocaleString(undefined, { maximumFractionDigits: 4 })} {TOKEN}
           </h2>
           <p className="mt-1 max-w-xl text-sm text-ns-muted">
             Coins go in from many addresses and come out to new ones. Inside the pool every coin looks the same, and nothing records which one
@@ -113,17 +123,20 @@ export function MixingVisual({ events, pools, denom, teacher }: MixingVisualProp
           </span>
         ))}
       </div>
-      {mixingCount > 0 && (
-        <p className="mt-3 text-sm">
-          <span className="font-semibold text-ns-teal">
-            {mixingAmount.toLocaleString(undefined, { maximumFractionDigits: 4 })} {TOKEN}
-          </span>{" "}
-          <span className="text-ns-muted">
-            ({formatUsd(mixingAmount, rate)}) of yours is being mixed. In a real pool this takes minutes to hours before you withdraw.
-            {!teacher && " Turn on teacher view to highlight your coin."}
-          </span>
-        </p>
-      )}
+      <p className="mt-3 text-sm text-ns-muted">
+        {userAddress ? (
+          <>
+            <span className="font-mono font-semibold text-ns-text">{shorten(userAddress)}</span>, you
+          </>
+        ) : (
+          "You"
+        )}{" "}
+        currently have an ongoing order of{" "}
+        <span className="font-semibold text-ns-teal">
+          {orderAmount.toLocaleString(undefined, { maximumFractionDigits: 4 })} {TOKEN}
+        </span>{" "}
+        ({formatUsd(orderAmount, rate)}) which will be ready in some days from now.
+      </p>
     </section>
   );
 }
