@@ -5,7 +5,7 @@ import { Menu, Wallet, X } from "lucide-react";
 import { Button } from "./ui";
 import { formatUsd, shorten, TOKEN } from "@/lib/nullset/sim";
 import { useEthUsd } from "@/lib/nullset/price";
-import { DEFAULT_BRAND, useBrand } from "@/lib/nullset/brand";
+import { useBrand } from "@/lib/nullset/brand";
 
 export interface DemoWallet {
   address: string;
@@ -18,15 +18,22 @@ const LINKS = [
   { href: "#mixing", label: "Live pool" },
 ];
 
+function EthereumIcon({ className = "size-3.5" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 256 417" className={className} fill="currentColor" aria-hidden>
+      <path d="M127.9 0 125.1 9.5v275.6l2.8 2.8 127.9-75.6L127.9 0Z" opacity=".85" />
+      <path d="M127.9 0 0 212.3l127.9 75.6V0Z" />
+      <path d="m127.9 312.2-1.6 1.9v98.1l1.6 4.6 128-180.3-128 75.7Z" opacity=".85" />
+      <path d="M127.9 416.8V312.2L0 236.5l127.9 180.3Z" />
+    </svg>
+  );
+}
+
 export function Logo() {
   const { name } = useBrand();
   return (
-    <a href="#top" className="flex items-center gap-2.5 text-lg font-extrabold tracking-tight" aria-label={`${name} home`}>
-      <svg viewBox="0 0 32 32" className="size-8" fill="none" aria-hidden>
-        <circle cx="16" cy="16" r="13" stroke="currentColor" strokeWidth="2.4" opacity=".2" />
-        <circle cx="16" cy="16" r="13" stroke={DEFAULT_BRAND.primary} strokeWidth="2.4" strokeDasharray="20 62" strokeLinecap="round" />
-        <path d="M9 23 23 9" stroke={DEFAULT_BRAND.secondary} strokeWidth="2.4" strokeLinecap="round" />
-      </svg>
+    <a href="#top" className="flex items-center gap-2.5 text-lg font-extrabold tracking-tight text-ns-teal" aria-label={`${name} home`}>
+      <img src="/tornado-mark.png" alt="" className="size-8 shrink-0 object-contain" />
       {name}
     </a>
   );
@@ -45,7 +52,9 @@ function WalletButton({ wallet, connecting, onConnect, onDisconnect, full }: Hea
   return (
     <div className={`flex items-center gap-2 ${full ? "w-full" : ""}`}>
       <div className="flex h-11 flex-1 items-center gap-2 rounded-sm border border-ns-border bg-ns-surface-2 px-3 text-sm">
-        <span className="size-2 rounded-full bg-ns-ok" aria-hidden />
+        <span className="grid size-6 shrink-0 place-items-center rounded-[3px] border border-ns-teal/50 bg-ns-teal-soft text-ns-teal">
+          <EthereumIcon className="size-3.5" />
+        </span>
         <span className="font-mono text-xs">{shorten(wallet.address)}</span>
         <span className="ml-auto flex flex-col items-end pl-2 leading-tight">
           <span className="font-semibold text-ns-teal">
@@ -83,8 +92,11 @@ export function Header(props: HeaderProps) {
           ))}
         </nav>
         <div className="ml-auto hidden items-center gap-3 lg:flex">
-          <span className="hidden items-center gap-1.5 rounded-sm border xl:inline-flex border-ns-border bg-ns-surface-2 px-3 py-1 text-xs font-semibold text-ns-muted">
-            <span className="size-1.5 rounded-full bg-ns-violet" /> Ethereum
+          <span className="inline-flex h-11 items-center gap-2 rounded-sm border border-ns-border bg-ns-surface-2 px-3 text-xs font-bold text-ns-text">
+            <span className="grid size-6 place-items-center rounded-[3px] border border-ns-teal/50 bg-ns-teal-soft text-ns-teal">
+              <EthereumIcon className="size-3.5" />
+            </span>
+            Ethereum
           </span>
           <div className="w-60">
             <WalletButton {...props} full />

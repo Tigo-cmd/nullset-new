@@ -6,23 +6,23 @@
  * private ("hidden") data. Status colours are kept muted and used sparingly.
  */
 @theme {
-  --color-ns-bg: #000403;
-  --color-ns-surface: #070d0b;
-  --color-ns-surface-2: #0d1713;
-  --color-ns-surface-3: #14261f;
-  --color-ns-border: #214031;
-  --color-ns-border-strong: #396a53;
-  --color-ns-text: #ecfdf5;
-  --color-ns-muted: #7c998b;
+  --color-ns-bg: #000000;
+  --color-ns-surface: #000000;
+  --color-ns-surface-2: #080808;
+  --color-ns-surface-3: #121212;
+  --color-ns-border: #2d5e46;
+  --color-ns-border-strong: #94febf;
+  --color-ns-text: #ffffff;
+  --color-ns-muted: #b8d8c8;
   --color-ns-teal: #94febf;
-  --color-ns-teal-soft: #112a1d;
-  --color-ns-teal-ink: #000403;
-  --color-ns-violet: #5eead4;
-  --color-ns-violet-soft: #0f2926;
-  --color-ns-warn: #d4a24c;
-  --color-ns-warn-soft: #1f1a10;
-  --color-ns-danger: #e5484d;
-  --color-ns-danger-soft: #221012;
+  --color-ns-teal-soft: #133323;
+  --color-ns-teal-ink: #000000;
+  --color-ns-violet: #6ee7b7;
+  --color-ns-violet-soft: #0f2920;
+  --color-ns-warn: #fbbf24;
+  --color-ns-warn-soft: #241c08;
+  --color-ns-danger: #ff5c61;
+  --color-ns-danger-soft: #280d10;
   --color-ns-ok: #94febf;
 
   --font-sans: var(--font-pt-mono), ui-monospace, monospace;
@@ -37,11 +37,9 @@ body {
   background-color: var(--color-ns-bg);
 }
 
-/* Page shell: deep black-green with a faint mint grid. */
+/* Page shell: solid black. */
 .ns-shell {
-  background-color: var(--color-ns-bg);
-  background-image: radial-gradient(circle at 1px 1px, rgb(148 254 191 / 0.06) 1px, transparent 0);
-  background-size: 24px 24px;
+  background-color: #000000;
 }
 
 ::selection {
