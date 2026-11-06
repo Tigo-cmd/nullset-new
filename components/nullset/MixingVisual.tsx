@@ -2,7 +2,8 @@
 
 import { useSyncExternalStore } from "react";
 import { ArrowRight, Shuffle } from "lucide-react";
-import { clock, shorten, TOKEN, type Denom, type LedgerEvent, type Pool } from "@/lib/nullset/sim";
+import { clock, formatUsd, shorten, TOKEN, type Denom, type LedgerEvent, type Pool } from "@/lib/nullset/sim";
+import { useEthUsd } from "@/lib/nullset/price";
 
 interface MixingVisualProps {
   events: LedgerEvent[];
@@ -25,8 +26,15 @@ const frac = (i: number, salt: number) => {
  */
 export function MixingVisual({ events, pools, denom, teacher }: MixingVisualProps) {
   const now = useSyncExternalStore(clock.subscribe, clock.getSnapshot, clock.getServerSnapshot);
+  const rate = useEthUsd();
   const pool = pools[denom];
   if (!pool) return null;
+
+  // Coins of yours still in this pool: your deposits here minus your withdrawals here.
+  const myDeposits = events.filter((e) => e.kind === "deposit" && e.mine && e.denom === denom).length;
+  const myWithdrawals = events.filter((e) => e.kind === "withdraw" && e.mine && e.denom === denom).length;
+  const mixingCount = Math.max(0, myDeposits - myWithdrawals);
+  const mixingAmount = mixingCount * Number(denom);
   const dots = Math.min(MAX_DOTS, pool.count);
   const mineSlots = new Set(Object.values(pool.leaves).map((leaf) => leaf % dots));
 
@@ -105,8 +113,16 @@ export function MixingVisual({ events, pools, denom, teacher }: MixingVisualProp
           </span>
         ))}
       </div>
-      {!teacher && Object.keys(pool.leaves).length > 0 && (
-        <p className="mt-3 text-xs text-ns-muted">Your coin is somewhere in there. Turn on teacher view to highlight it.</p>
+      {mixingCount > 0 && (
+        <p className="mt-3 text-sm">
+          <span className="font-semibold text-ns-teal">
+            {mixingAmount.toLocaleString(undefined, { maximumFractionDigits: 4 })} {TOKEN}
+          </span>{" "}
+          <span className="text-ns-muted">
+            ({formatUsd(mixingAmount, rate)}) of yours is being mixed. In a real pool this takes minutes to hours before you withdraw.
+            {!teacher && " Turn on teacher view to highlight your coin."}
+          </span>
+        </p>
       )}
     </section>
   );
