@@ -8,6 +8,7 @@ import { clock, DENOMS, depositAge, formatAgo, TOKEN, type Denom, type Pool } fr
 export function StatsCard({ pools, denom, onDenomChange }: { pools: Record<Denom, Pool>; denom: Denom; onDenomChange: (d: Denom) => void }) {
   const now = useSyncExternalStore(clock.subscribe, clock.getSnapshot, clock.getServerSnapshot);
   const pool = pools[denom];
+  if (!pool) return null;
   const held = (pool.count - pool.withdrawn) * Number(denom);
 
   return (

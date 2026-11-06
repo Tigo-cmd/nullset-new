@@ -26,6 +26,7 @@ const frac = (i: number, salt: number) => {
 export function MixingVisual({ events, pools, denom, teacher }: MixingVisualProps) {
   const now = useSyncExternalStore(clock.subscribe, clock.getSnapshot, clock.getServerSnapshot);
   const pool = pools[denom];
+  if (!pool) return null;
   const dots = Math.min(MAX_DOTS, pool.count);
   const mineSlots = new Set(Object.values(pool.leaves).map((leaf) => leaf % dots));
 

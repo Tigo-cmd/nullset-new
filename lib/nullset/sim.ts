@@ -4,8 +4,9 @@
 // real SHA-256 (Web Crypto) so the note → commitment → nullifier flow is
 // genuine, but "deposits", "proofs" and "withdrawals" only change React state.
 
+/** Preset deposit amounts shown as quick buttons. Any positive amount is allowed. */
 export const DENOMS = ["5", "10", "20", "30", "40", "50"] as const;
-export type Denom = (typeof DENOMS)[number];
+export type Denom = string;
 export const TOKEN = "ETH";
 
 /** Fixed display rate used only to show a USD estimate next to the balance. */
@@ -58,7 +59,7 @@ export function encodeNote(n: Note, prefix = "nullset"): string {
 }
 
 export function parseNote(raw: string): Note | null {
-  const m = raw.trim().match(/^[a-z0-9]{1,24}-(5|10|20|30|40|50)eth-([0-9a-f]{62})([0-9a-f]{62})$/);
+  const m = raw.trim().match(/^[a-z0-9]{1,24}-(\d+(?:\.\d+)?)eth-([0-9a-f]{62})([0-9a-f]{62})$/);
   if (!m) return null;
   return { denom: m[1] as Denom, nullifier: m[2], secret: m[3] };
 }

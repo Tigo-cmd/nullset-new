@@ -101,24 +101,57 @@ export function PoolCard(props: PoolCardProps) {
 }
 
 function DenomPicker({ value, onChange }: { value: Denom; onChange: (d: Denom) => void }) {
+  const isCustom = !(DENOMS as readonly string[]).includes(value);
+  const [draft, setDraft] = useState(isCustom ? value : "");
+  const commit = () => {
+    const n = Number(draft);
+    if (Number.isFinite(n) && n > 0) onChange(String(n));
+    else setDraft(isCustom ? value : "");
+  };
   return (
-    <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Amount">
-      {DENOMS.map((d) => (
-        <button
-          key={d}
-          role="radio"
-          aria-checked={value === d}
-          onClick={() => onChange(d)}
-          className={`h-12 rounded-xl border text-sm font-semibold transition ${
-            value === d
-              ? "border-ns-teal bg-ns-teal-soft text-ns-teal"
-              : "border-ns-border bg-ns-surface-2 text-ns-text hover:border-ns-border-strong"
-          }`}
-        >
-          {d}
-          <span className="ml-1 text-[11px] font-medium opacity-70">{TOKEN}</span>
-        </button>
-      ))}
+    <div>
+      <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Amount">
+        {DENOMS.map((d) => (
+          <button
+            key={d}
+            role="radio"
+            aria-checked={value === d}
+            onClick={() => {
+              setDraft("");
+              onChange(d);
+            }}
+            className={`h-12 rounded-xl border text-sm font-semibold transition ${
+              value === d
+                ? "border-ns-teal bg-ns-teal-soft text-ns-teal"
+                : "border-ns-border bg-ns-surface-2 text-ns-text hover:border-ns-border-strong"
+            }`}
+          >
+            {d}
+            <span className="ml-1 text-[11px] font-medium opacity-70">{TOKEN}</span>
+          </button>
+        ))}
+      </div>
+      <div
+        className={`mt-2 flex h-12 items-center gap-2 rounded-xl border px-3 transition ${
+          isCustom ? "border-ns-teal bg-ns-teal-soft" : "border-ns-border bg-ns-surface-2"
+        }`}
+      >
+        <span className={`text-xs font-semibold ${isCustom ? "text-ns-teal" : "text-ns-muted"}`}>Custom</span>
+        <input
+          type="number"
+          inputMode="decimal"
+          min="0"
+          step="any"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
+          onKeyDown={(e) => e.key === "Enter" && (e.target as HTMLInputElement).blur()}
+          placeholder="Enter your own amount"
+          aria-label="Custom amount"
+          className="flex-1 bg-transparent text-sm font-semibold text-ns-text placeholder:font-normal placeholder:text-ns-muted/60 focus:outline-none"
+        />
+        <span className="text-[11px] font-medium text-ns-muted">{TOKEN}</span>
+      </div>
     </div>
   );
 }
@@ -198,7 +231,7 @@ function DepositTab({
           </Button>
         )}
         <p className="mt-3 text-center text-xs text-ns-muted">
-          The pool currently has {pools[denom].count.toLocaleString()} equal deposits of {denom} {TOKEN}.
+          The pool currently has {(pools[denom]?.count ?? 0).toLocaleString()} equal deposits of {denom} {TOKEN}.
         </p>
       </div>
 

@@ -66,18 +66,29 @@ export function MixerApp() {
     setEvents((list) => [{ ...e, id: randHex(8), at: Date.now() }, ...list].slice(0, 100));
   }
 
+  const emptyPool = (): Pool => ({ count: 0, withdrawn: 0, recent: [], leaves: {}, spent: [] });
+
+  // Select an amount, creating its pool on the fly for custom amounts.
+  function selectDenom(d: Denom) {
+    setPools((p) => (p[d] ? p : { ...p, [d]: emptyPool() }));
+    setDenom(d);
+  }
+
   /** Adds a deposit to a pool and returns its leaf number. */
   function addDeposit(d: Denom, commitment: string, address: string, mine: boolean): number {
-    const index = pools[d].count + 1;
-    setPools((p) => ({
-      ...p,
-      [d]: {
-        ...p[d],
-        count: p[d].count + 1,
-        recent: [{ index, at: Date.now(), mine }, ...p[d].recent].slice(0, 60),
-        leaves: mine ? { ...p[d].leaves, [commitment]: index } : p[d].leaves,
-      },
-    }));
+    const index = (pools[d] ?? emptyPool()).count + 1;
+    setPools((p) => {
+      const cur = p[d] ?? emptyPool();
+      return {
+        ...p,
+        [d]: {
+          ...cur,
+          count: cur.count + 1,
+          recent: [{ index, at: Date.now(), mine }, ...cur.recent].slice(0, 60),
+          leaves: mine ? { ...cur.leaves, [commitment]: index } : cur.leaves,
+        },
+      };
+    });
     log({ kind: "deposit", denom: d, address, hash: commitment, leaf: index, mine });
     clock.tick();
     return index;
@@ -92,10 +103,11 @@ export function MixerApp() {
 
   function withdraw(w: { denom: Denom; commitment: string; nullifierHash: string; recipient: string; payout: number; fee: number }) {
     const d = w.denom;
-    setPools((p) => ({ ...p, [d]: { ...p[d], withdrawn: p[d].withdrawn + 1, spent: [...p[d].spent, w.nullifierHash] } }));
+    setPools((p) => { const cur = p[d] ?? emptyPool(); return { ...p, [d]: { ...cur, withdrawn: cur.withdrawn + 1, spent: [...cur.spent, w.nullifierHash] } }; });
     setWallet((cur) => (cur && cur.address.toLowerCase() === w.recipient.toLowerCase() ? { ...cur, balance: +(cur.balance + w.payout).toFixed(6) } : cur));
-    const leaf = pools[d].leaves[w.commitment];
-    log({ kind: "withdraw", denom: d, address: w.recipient, hash: w.nullifierHash, fee: w.fee, mine: true, spentLeaf: leaf, setSize: pools[d].count });
+    const pool = pools[d] ?? emptyPool();
+    const leaf = pool.leaves[w.commitment];
+    log({ kind: "withdraw", denom: d, address: w.recipient, hash: w.nullifierHash, fee: w.fee, mine: true, spentLeaf: leaf, setSize: pool.count });
     const dep = events.find((e) => e.kind === "deposit" && e.mine && e.denom === d && e.leaf === leaf);
     setMixes((m) => [
       { id: randHex(8), denom: d, from: dep?.address ?? "0x" + randHex(20), to: w.recipient, depositAt: dep?.at ?? Date.now(), withdrawAt: Date.now(), setSize: pools[d].count, leaf },
@@ -108,7 +120,7 @@ export function MixerApp() {
   /** Other users' deposits and withdrawals, so the class can watch the anonymity set grow. */
   async function strangerActivity() {
     const d = denom;
-    let count = pools[d].count;
+    let count = (pools[d] ?? emptyPool()).count;
     let withdrawn = 0;
     const added: { index: number; at: number }[] = [];
     const newEvents: LedgerEvent[] = [];
@@ -125,7 +137,7 @@ export function MixerApp() {
     }
     setPools((p) => ({
       ...p,
-      [d]: { ...p[d], count: p[d].count + added.length, withdrawn: p[d].withdrawn + withdrawn, recent: [...added, ...p[d].recent].slice(0, 60) },
+      [d]: (() => { const cur = p[d] ?? emptyPool(); return { ...cur, count: cur.count + added.length, withdrawn: cur.withdrawn + withdrawn, recent: [...added, ...cur.recent].slice(0, 60) }; })(),
     }));
     setEvents((list) => [...newEvents, ...list].slice(0, 100));
     clock.tick();
@@ -150,6 +162,7 @@ export function MixerApp() {
 
   function reset() {
     setPools(seedPools());
+    setDenom("10");
     setEvents([]);
     setMixes(seedMixHistory());
     setWallet(null);
@@ -191,7 +204,7 @@ export function MixerApp() {
             connecting={connecting}
             pools={pools}
             denom={denom}
-            onDenomChange={setDenom}
+            onDenomChange={selectDenom}
             onConnect={connect}
             onDeposit={deposit}
             onWithdraw={withdraw}
@@ -200,7 +213,7 @@ export function MixerApp() {
             feeRate={controls.feeRate}
             speed={controls.speed}
           />
-          <StatsCard pools={pools} denom={denom} onDenomChange={setDenom} />
+          <StatsCard pools={pools} denom={denom} onDenomChange={selectDenom} />
         </div>
 
         <MixingVisual events={events} pools={pools} denom={denom} teacher={teacher} />
