@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { ArrowRight, Shuffle } from "lucide-react";
+import { ArrowRight, GraduationCap, Shuffle } from "lucide-react";
 import { clock, formatUsd, shorten, TOKEN, type Denom, type LedgerEvent, type MixRecord, type Pool } from "@/lib/nullset/sim";
 import { useEthUsd } from "@/lib/nullset/price";
 import type { DemoWallet } from "./Header";
@@ -11,6 +11,8 @@ interface MixingVisualProps {
   pools: Record<Denom, Pool>;
   denom: Denom;
   teacher: boolean;
+  presenter: boolean;
+  onTeacherChange: (v: boolean) => void;
   wallet: DemoWallet | null;
   mixes: MixRecord[];
 }
@@ -27,7 +29,7 @@ const frac = (i: number, salt: number) => {
  * Animated picture of the pool: coins fly in from depositors, orbit together
  * where they all look the same, and fly out to new addresses.
  */
-export function MixingVisual({ events, pools, denom, teacher, wallet, mixes }: MixingVisualProps) {
+export function MixingVisual({ events, pools, denom, teacher, presenter, onTeacherChange, wallet, mixes }: MixingVisualProps) {
   const now = useSyncExternalStore(clock.subscribe, clock.getSnapshot, clock.getServerSnapshot);
   const rate = useEthUsd();
   const pool = pools[denom];
@@ -66,10 +68,21 @@ export function MixingVisual({ events, pools, denom, teacher, wallet, mixes }: M
             comes out.
           </p>
         </div>
-        <div className="flex gap-4 text-xs text-ns-muted">
+        <div className="flex flex-wrap items-center gap-4 text-xs text-ns-muted">
           <Legend color="bg-ns-teal" label="your deposit" />
           <Legend color="bg-ns-violet" label="your withdrawal" />
           <Legend color="bg-ns-muted" label="other users" />
+          {presenter && (
+            <label className="flex h-8 cursor-pointer items-center gap-2 rounded-sm border border-ns-border px-3 text-xs font-semibold text-ns-text">
+              <GraduationCap className="size-3.5 text-ns-violet" />
+              Teacher view
+              <input type="checkbox" checked={teacher} onChange={(e) => onTeacherChange(e.target.checked)} className="peer sr-only" />
+              <span
+                className="relative h-4 w-7 rounded-full bg-ns-surface-3 transition peer-checked:bg-ns-violet after:absolute after:left-0.5 after:top-0.5 after:size-3 after:rounded-full after:bg-white after:transition peer-checked:after:translate-x-3"
+                aria-hidden
+              />
+            </label>
+          )}
         </div>
       </div>
 

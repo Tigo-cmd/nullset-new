@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BookOpen, Menu, Wallet, X } from "lucide-react";
+import { Menu, Wallet, X } from "lucide-react";
 import { Button } from "./ui";
 import { formatUsd, shorten, TOKEN } from "@/lib/nullset/sim";
 import { useEthUsd } from "@/lib/nullset/price";
@@ -16,9 +16,6 @@ const LINKS = [
   { href: "#pool", label: "Pool" },
   { href: "#stats", label: "Statistics" },
   { href: "#mixing", label: "Live pool" },
-  { href: "#deposits", label: "Deposits" },
-  { href: "#history", label: "Mixes" },
-  { href: "#how", label: "How it works" },
 ];
 
 export function Logo() {
@@ -84,9 +81,6 @@ export function Header(props: HeaderProps) {
               {l.label}
             </a>
           ))}
-          <a href="#how" className="inline-flex items-center gap-1.5 hover:text-ns-text">
-            <BookOpen className="size-4" /> Docs
-          </a>
         </nav>
         <div className="ml-auto hidden items-center gap-3 lg:flex">
           <span className="hidden items-center gap-1.5 rounded-sm border xl:inline-flex border-ns-border bg-ns-surface-2 px-3 py-1 text-xs font-semibold text-ns-muted">
@@ -115,15 +109,12 @@ export function Header(props: HeaderProps) {
       </div>
       {open && (
         <div className="border-t border-ns-border bg-ns-bg px-4 pb-5 pt-3 lg:hidden">
-          <nav className="flex flex-col text-[15px]">
+          <nav className=" mb-3 flex flex-col text-[15px]">
             {LINKS.map((l) => (
               <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="border-b border-ns-border/60 py-3 text-ns-text">
                 {l.label}
               </a>
             ))}
-            <a href="#how" onClick={() => setOpen(false)} className="inline-flex items-center gap-2 py-3">
-              <BookOpen className="size-4" /> Docs
-            </a>
           </nav>
           <WalletButton {...props} full />
         </div>

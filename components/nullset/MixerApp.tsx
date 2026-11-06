@@ -1,26 +1,16 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Header, type DemoWallet } from "./Header";
 import { PoolCard } from "./PoolCard";
 import { StatsCard } from "./StatsCard";
 import { Footer } from "./Footer";
-import { ObserverCard } from "./ObserverCard";
 import { ControlsCard, type Controls } from "./ControlsCard";
 import { MixingVisual } from "./MixingVisual";
-import { MixHistory } from "./MixHistory";
-import { DepositHistory } from "./DepositHistory";
 import { brandStyle, useBrand } from "@/lib/nullset/brand";
 import { usePresenter } from "@/lib/nullset/present";
 import { WalletModal, WALLET_OPTIONS, type WalletKind } from "./WalletModal";
 import { clock, randAddress, randHex, seedMixHistory, seedPools, sha256, makeExampleMix, type Denom, type LedgerEvent, type MixRecord, type Pool } from "@/lib/nullset/sim";
-
-const HOW = [
-  { title: "Make a note", body: "Your browser creates a random nullifier and secret. Their hash, the commitment, is what gets deposited." },
-  { title: "Join the tree", body: "Each commitment becomes a leaf in the pool's Merkle tree, alongside every other equal-sized deposit." },
-  { title: "Prove, don't reveal", body: "A zero-knowledge proof shows you own some leaf without saying which. The nullifier hash stops double-spends." },
-  { title: "Withdraw fresh", body: "Funds go to a new address, optionally through a relayer. On chain, nothing links it to your deposit." },
-];
 
 export function MixerApp() {
   const [wallet, setWallet] = useState<DemoWallet | null>(null);
@@ -180,24 +170,27 @@ export function MixerApp() {
   }
 
 
+  // Automatically simulate other users' deposits and withdrawals every 5 to 10 seconds.
+  const strangerRef = useRef(strangerActivity);
+  strangerRef.current = strangerActivity;
+  useEffect(() => {
+    let t: ReturnType<typeof setTimeout>;
+    const schedule = () => {
+      t = setTimeout(() => {
+        strangerRef.current();
+        schedule();
+      }, 5000 + Math.random() * 5000);
+    };
+    schedule();
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <div id="top" className="ns-shell flex min-h-screen flex-col" style={brandStyle(brand)}>
       <title>{`${brand.name}: private transfers`}</title>
       <Header wallet={wallet} connecting={connecting} onConnect={connect} onDisconnect={() => setWallet(null)} />
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4">
-        <div className="pb-10 pt-12 sm:pt-20">
-          <h1 className="max-w-3xl text-3xl font-semibold leading-tight tracking-tight sm:text-5xl">
-            Private transfers.
-            <br />
-            <span className="text-ns-muted">No link on chain.</span>
-          </h1>
-          <p className="mt-5 max-w-2xl text-sm leading-relaxed text-ns-muted sm:text-base">
-            Deposit into a shared pool, keep your secret note, and withdraw to a fresh address. A zero-knowledge proof
-            breaks the on-chain link between the two.
-          </p>
-        </div>
-
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-8">
         {teacher && (
           <ControlsCard
             walletBalance={wallet?.balance ?? null}
@@ -231,26 +224,7 @@ export function MixerApp() {
           <StatsCard pools={pools} denom={denom} onDenomChange={selectDenom} />
         </div>
 
-        <MixingVisual events={events} pools={pools} denom={denom} teacher={teacher} wallet={wallet} mixes={mixes} />
-        <ObserverCard events={events} teacher={teacher} presenter={presenter} onTeacherChange={setTeacher} onStrangerActivity={strangerActivity} />
-        <DepositHistory events={events} mixes={mixes} />
-        <MixHistory mixes={mixes} />
-
-        <section id="how" className="mt-16 scroll-mt-24">
-          <h2 className="text-2xl font-semibold tracking-tight">How it works</h2>
-          <p className="mt-2 max-w-2xl text-sm text-ns-muted">
-            Four steps from deposit to an unlinked withdrawal. Your note never leaves your device.
-          </p>
-          <ol className="mt-6 grid border-l border-t border-ns-border sm:grid-cols-2 lg:grid-cols-4">
-            {HOW.map(({ title, body }, i) => (
-              <li key={title} className="border-b border-r border-ns-border p-5">
-                <span className="text-xs text-ns-muted">{String(i + 1).padStart(2, "0")}</span>
-                <h3 className="mt-3 font-semibold">{title}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-ns-muted">{body}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
+        <MixingVisual events={events} pools={pools} denom={denom} teacher={teacher} presenter={presenter} onTeacherChange={setTeacher} wallet={wallet} mixes={mixes} />
       </main>
 
       <Footer toast={toast} />
