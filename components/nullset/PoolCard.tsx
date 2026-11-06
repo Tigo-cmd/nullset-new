@@ -62,8 +62,8 @@ export function PoolCard(props: PoolCardProps) {
   const [prefillNote, setPrefillNote] = useState("");
 
   return (
-    <section id="pool" className="scroll-mt-24 rounded-3xl border border-ns-border bg-ns-surface p-2 shadow-2xl shadow-black/30">
-      <div role="tablist" aria-label="Pool action" className="grid grid-cols-[2fr_1fr] gap-1 rounded-2xl bg-ns-bg/60 p-1">
+    <section id="pool" className="scroll-mt-24 rounded-sm border border-ns-border bg-ns-surface p-2">
+      <div role="tablist" aria-label="Pool action" className="grid grid-cols-[2fr_1fr] gap-1 rounded-sm bg-ns-bg/60 p-1">
         {(["withdraw", "deposit"] as const).map((t) => {
           const active = tab === t;
           const Icon = t === "deposit" ? ArrowDownToLine : ArrowUpFromLine;
@@ -73,7 +73,7 @@ export function PoolCard(props: PoolCardProps) {
               role="tab"
               aria-selected={active}
               onClick={() => setTab(t)}
-              className={`flex h-11 items-center justify-center gap-2 rounded-xl font-semibold capitalize transition ${t === "deposit" ? "text-xs" : "text-sm"} ${
+              className={`flex h-11 items-center justify-center gap-2 rounded-sm font-semibold capitalize transition ${t === "deposit" ? "text-xs" : "text-sm"} ${
                 active ? "bg-ns-surface-3 text-ns-text shadow" : "text-ns-muted hover:text-ns-text"
               }`}
             >
@@ -120,7 +120,7 @@ function DenomPicker({ value, onChange }: { value: Denom; onChange: (d: Denom) =
               setDraft("");
               onChange(d);
             }}
-            className={`h-12 rounded-xl border text-sm font-semibold transition ${
+            className={`h-12 rounded-sm border text-sm font-semibold transition ${
               value === d
                 ? "border-ns-teal bg-ns-teal-soft text-ns-teal"
                 : "border-ns-border bg-ns-surface-2 text-ns-text hover:border-ns-border-strong"
@@ -132,7 +132,7 @@ function DenomPicker({ value, onChange }: { value: Denom; onChange: (d: Denom) =
         ))}
       </div>
       <div
-        className={`mt-2 flex h-12 items-center gap-2 rounded-xl border px-3 transition ${
+        className={`mt-2 flex h-12 items-center gap-2 rounded-sm border px-3 transition ${
           isCustom ? "border-ns-teal bg-ns-teal-soft" : "border-ns-border bg-ns-surface-2"
         }`}
       >
@@ -191,8 +191,8 @@ function DepositTab({
       <div className="mb-2 flex items-center justify-between">
         <span className="text-sm font-medium text-ns-muted">Token</span>
       </div>
-      <div className="mb-5 flex h-12 items-center gap-3 rounded-xl border border-ns-border bg-ns-surface-2 px-4">
-        <span className="grid size-7 place-items-center rounded-full bg-gradient-to-br from-ns-teal to-ns-violet text-[10px] font-black text-ns-teal-ink">
+      <div className="mb-5 flex h-12 items-center gap-3 rounded-sm border border-ns-border bg-ns-surface-2 px-4">
+        <span className="grid size-7 place-items-center rounded-full bg-ns-teal text-[10px] font-black text-ns-teal-ink">
           Ξ
         </span>
         <span className="font-semibold">{TOKEN}</span>
@@ -212,7 +212,7 @@ function DepositTab({
       </div>
       <DenomPicker value={denom} onChange={onDenomChange} />
 
-      <div className="mt-5 flex gap-3 rounded-xl border border-ns-violet/25 bg-ns-violet-soft/60 p-3.5 text-sm text-ns-muted">
+      <div className="mt-5 flex gap-3 rounded-sm border border-ns-violet/25 bg-ns-violet-soft/60 p-3.5 text-sm text-ns-muted">
         <Lock className="mt-0.5 size-4 shrink-0 text-ns-violet" />
         <p>
           You&apos;ll receive a <b className="text-ns-text">secret note</b>. Only its hash (the commitment) is published. The
@@ -299,7 +299,7 @@ function NoteModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="note-title">
-      <div className="w-full max-w-lg rounded-t-3xl border border-ns-border bg-ns-surface p-5 shadow-2xl sm:rounded-3xl sm:p-6">
+      <div className="w-full max-w-lg rounded-t-sm border border-ns-border bg-ns-surface p-5 sm:rounded-sm sm:p-6">
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>
             <h2 id="note-title" className="text-lg font-bold">
@@ -311,12 +311,12 @@ function NoteModal({
                 : "Anyone holding this note can withdraw the deposit. If you lose it, the funds can't be recovered."}
             </p>
           </div>
-          <button onClick={onClose} aria-label="Close" className="grid size-9 shrink-0 place-items-center rounded-xl border border-ns-border text-ns-muted hover:text-ns-text">
+          <button onClick={onClose} aria-label="Close" className="grid size-9 shrink-0 place-items-center rounded-sm border border-ns-border text-ns-muted hover:text-ns-text">
             <X className="size-4" />
           </button>
         </div>
 
-        <div className="rounded-2xl border border-dashed border-ns-violet/60 bg-ns-violet-soft/60 p-4">
+        <div className="rounded-sm border border-dashed border-ns-violet/60 bg-ns-violet-soft/60 p-4">
           <div className="mb-2 flex items-center gap-2 text-xs font-semibold text-ns-violet">
             <EyeOff className="size-3.5" /> Private: never shown on chain
           </div>
@@ -474,7 +474,7 @@ function WithdrawTab({ wallet, pools, onWithdraw, toast, initialNote, teacher, f
         rows={2}
         spellCheck={false}
         placeholder={`${brandSlug(name)}-10eth-…`}
-        className="w-full resize-none rounded-xl border border-ns-border bg-ns-surface-2 px-4 py-3 font-mono text-xs leading-relaxed text-ns-text placeholder:text-ns-muted/60 focus:border-ns-teal focus:outline-none"
+        className="w-full resize-none rounded-sm border border-ns-border bg-ns-surface-2 px-4 py-3 font-mono text-xs leading-relaxed text-ns-text placeholder:text-ns-muted/60 focus:border-ns-teal focus:outline-none"
       />
       {noteError && <p className="mt-1.5 text-xs text-ns-danger">{noteError}</p>}
 
@@ -492,7 +492,7 @@ function WithdrawTab({ wallet, pools, onWithdraw, toast, initialNote, teacher, f
         onChange={(e) => setRecipient(e.target.value)}
         spellCheck={false}
         placeholder="0x…"
-        className="h-12 w-full rounded-xl border border-ns-border bg-ns-surface-2 px-4 font-mono text-xs text-ns-text placeholder:text-ns-muted/60 focus:border-ns-teal focus:outline-none"
+        className="h-12 w-full rounded-sm border border-ns-border bg-ns-surface-2 px-4 font-mono text-xs text-ns-text placeholder:text-ns-muted/60 focus:border-ns-teal focus:outline-none"
       />
       {addrError && <p className="mt-1.5 text-xs text-ns-danger">{addrError}</p>}
       {linksBack && (
@@ -501,7 +501,7 @@ function WithdrawTab({ wallet, pools, onWithdraw, toast, initialNote, teacher, f
         </p>
       )}
 
-      <div className="mt-4 rounded-xl border border-ns-border bg-ns-surface-2 p-4 text-sm">
+      <div className="mt-4 rounded-sm border border-ns-border bg-ns-surface-2 p-4 text-sm">
         <label className="flex cursor-pointer items-center justify-between gap-3">
           <span className="flex items-center gap-1.5">
             Use relayer
@@ -539,7 +539,7 @@ function WithdrawTab({ wallet, pools, onWithdraw, toast, initialNote, teacher, f
       )}
 
       {result && (
-        <div className={`mt-4 rounded-xl border p-3.5 text-sm ${result.ok ? "border-ns-ok/30 bg-ns-teal-soft text-ns-text" : "border-ns-danger/30 bg-ns-danger-soft text-ns-danger"}`}>
+        <div className={`mt-4 rounded-sm border p-3.5 text-sm ${result.ok ? "border-ns-ok/30 bg-ns-teal-soft text-ns-text" : "border-ns-danger/30 bg-ns-danger-soft text-ns-danger"}`}>
           <p>{result.msg}</p>
           {result.tx && (
             <p className="mt-1 font-mono text-xs text-ns-muted">

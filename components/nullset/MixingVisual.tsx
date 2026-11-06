@@ -45,7 +45,7 @@ export function MixingVisual({ events, pools, denom, teacher }: MixingVisualProp
   const flights = now ? inPool.filter((e) => now - e.at < 9000).slice(0, 10) : [];
 
   return (
-    <section id="mixing" className="mt-5 scroll-mt-24 rounded-3xl border border-ns-border bg-ns-surface p-4 shadow-2xl shadow-black/30 sm:p-6">
+    <section id="mixing" className="mt-5 scroll-mt-24 rounded-sm border border-ns-border bg-ns-surface p-4 sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="flex items-center gap-2 text-base font-bold">
@@ -63,7 +63,7 @@ export function MixingVisual({ events, pools, denom, teacher }: MixingVisualProp
         </div>
       </div>
 
-      <div className="relative mt-5 h-[300px] overflow-hidden rounded-2xl border border-ns-border bg-ns-bg/60 sm:h-[340px]">
+      <div className="relative mt-5 h-[300px] overflow-hidden rounded-sm border border-ns-border bg-ns-bg/60 sm:h-[340px]">
         {/* side lists */}
         <Side title="Deposits in" items={deposits} align="left" />
         <Side title="Withdrawals out" items={withdrawals} align="right" />
@@ -73,7 +73,7 @@ export function MixingVisual({ events, pools, denom, teacher }: MixingVisualProp
         <ArrowRight className="absolute right-[27%] top-1/2 hidden size-5 -translate-y-1/2 text-ns-border-strong sm:block" />
 
         {/* the pool */}
-        <div className="ns-pulse absolute left-1/2 top-1/2 size-[230px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-ns-teal/40 bg-[radial-gradient(circle,rgb(45_212_191/0.10),rgb(155_135_255/0.06)_55%,transparent_70%)] sm:size-[270px]">
+        <div className="ns-pulse absolute left-1/2 top-1/2 size-[230px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-ns-teal/40 bg-ns-surface-2/40 sm:size-[270px]">
           {Array.from({ length: dots }, (_, i) => {
             const r = 34 + frac(i, 1) * 66;
             const dur = 9 + frac(i, 2) * 14;
@@ -81,7 +81,7 @@ export function MixingVisual({ events, pools, denom, teacher }: MixingVisualProp
             return (
               <span
                 key={i}
-                className={`ns-orbit absolute left-1/2 top-1/2 -ml-[5px] -mt-[5px] size-[10px] rounded-full ${mine ? "bg-ns-teal shadow-[0_0_10px_var(--color-ns-teal)]" : "bg-ns-muted/70"}`}
+                className={`ns-orbit absolute left-1/2 top-1/2 -ml-[5px] -mt-[5px] size-[10px] rounded-full ${mine ? "bg-ns-teal" : "bg-ns-muted/70"}`}
                 style={
                   {
                     "--r": `${r}px`,
@@ -93,7 +93,7 @@ export function MixingVisual({ events, pools, denom, teacher }: MixingVisualProp
               />
             );
           })}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-ns-surface/90 px-3 py-1.5 text-center shadow-lg">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-sm bg-ns-surface/90 px-3 py-1.5 text-center">
             <p className="text-lg font-bold leading-tight">{pool.count.toLocaleString()}</p>
             <p className="text-[10px] uppercase tracking-wider text-ns-muted">coins mixed</p>
           </div>
@@ -145,7 +145,7 @@ function Side({ title, items, align }: { title: string; items: LedgerEvent[]; al
         {items.map((e) => (
           <li
             key={e.id}
-            className={`truncate rounded-lg border px-2 py-1 font-mono text-[11px] ${
+            className={`truncate rounded-sm border px-2 py-1 font-mono text-[11px] ${
               e.mine ? (e.kind === "deposit" ? "border-ns-teal/40 text-ns-teal" : "border-ns-violet/40 text-ns-violet") : "border-ns-border text-ns-muted"
             }`}
           >
