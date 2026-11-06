@@ -68,7 +68,7 @@ export function ControlsCard(p: ControlsCardProps) {
             ))}
           </select>
         </Field>
-        <Field label="Pool sizes (deposits)">
+        <Field label="Coins mixed (per pool)">
           <div className="grid grid-cols-2 gap-2">
             {DENOMS.map((d) => (
               <div key={d} className="flex items-center gap-1.5">
