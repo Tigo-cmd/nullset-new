@@ -449,7 +449,7 @@ function WithdrawTab({ wallet, pools, onWithdraw, toast, initialNote, teacher, f
     if (pool.spent.includes(nullifierHash)) {
       return fail(3, `Nullifier hash ${shorten(nullifierHash)} has already been spent. Rejected as a double-spend.`);
     }
-    const payout = amount - fee;
+    const payout = +(amount - fee).toFixed(6);
     onWithdraw({ denom: parsed.denom, commitment, nullifierHash, recipient: recipient.trim(), payout, fee });
     explain(3, `nullifierHash not in the spent set, so it is accepted and added. Recipient ${shorten(recipient.trim())}.`);
     update(3, "done");
