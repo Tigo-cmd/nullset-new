@@ -218,17 +218,17 @@ export function seedMixHistory(): MixRecord[] {
   const H = 3_600_000;
   const D = 24 * H;
   const rows: [Denom, number | undefined, number, number, number][] = [
-    ["14.2", undefined, 4 * H, 184, 179],
-    ["20", 2 * H, 10 * H, 148, 139],
-    ["30", 8.5 * D, 10 * D, 91, 84],
-    ["10", 11 * D, 12 * D, 268, 251],
-    ["50", 13 * D, 14 * D, 37, 33],
-    ["5", 15 * D, 16 * D, 405, 389],
+    ["14.2", undefined, 22 * H, 184, 179],
+    ["85", 8 * D, 10 * D, 148, 139],
+    ["130", 14 * D, 16 * D, 91, 84],
+    ["64", 19 * D, 21 * D, 268, 251],
+    ["195", 26 * D, 28 * D, 37, 33],
+    ["240", 33 * D, 35 * D, 405, 389],
   ];
   return rows.map(([denom, wAge, dAge, setSize, leaf], i) => ({
     id: "seed" + i,
     denom,
-    from: USER_ADDRESS,
+    from: i === 0 ? USER_ADDRESS : "0x" + seededHex(rnd, 20),
     to: "0x" + seededHex(rnd, 20),
     depositAge: dAge,
     withdrawAge: wAge,
