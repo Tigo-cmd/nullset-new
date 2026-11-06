@@ -31,6 +31,13 @@ export function Logo() {
         <path d="M9 23 23 9" stroke={DEFAULT_BRAND.secondary} strokeWidth="2.4" strokeLinecap="round" />
       </svg>
       {name}
+      <span
+        title="Interactive simulation: no real funds or blockchain"
+        className="inline-flex items-center gap-1 rounded-full border border-ns-border bg-ns-surface-2 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ns-muted"
+      >
+        <span className="size-1.5 rounded-full bg-ns-warn" aria-hidden />
+        Simulation
+      </span>
     </a>
   );
 }
@@ -76,9 +83,9 @@ export function Header(props: HeaderProps) {
   const rate = useEthUsd();
   return (
     <header className="sticky top-0 z-40 border-b border-ns-border bg-ns-bg/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4">
+      <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 lg:gap-6">
         <Logo />
-        <nav className="hidden items-center gap-6 text-sm text-ns-muted md:flex">
+        <nav className="hidden items-center gap-4 whitespace-nowrap text-sm text-ns-muted md:flex lg:gap-5">
           {LINKS.map((l) => (
             <a key={l.href} href={l.href} className="hover:text-ns-text">
               {l.label}
@@ -92,7 +99,7 @@ export function Header(props: HeaderProps) {
           <span className="inline-flex items-center gap-1.5 rounded-full border border-ns-border bg-ns-surface-2 px-3 py-1 text-xs font-semibold text-ns-muted">
             <span className="size-1.5 rounded-full bg-ns-violet" /> Ethereum
           </span>
-          <div className="w-80">
+          <div className="w-64 lg:w-72">
             <WalletButton {...props} full />
           </div>
         </div>

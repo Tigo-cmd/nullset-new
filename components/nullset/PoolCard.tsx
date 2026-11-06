@@ -58,13 +58,13 @@ interface PoolCardProps {
 
 
 export function PoolCard(props: PoolCardProps) {
-  const [tab, setTab] = useState<Tab>("deposit");
+  const [tab, setTab] = useState<Tab>("withdraw");
   const [prefillNote, setPrefillNote] = useState("");
 
   return (
     <section id="pool" className="scroll-mt-24 rounded-3xl border border-ns-border bg-ns-surface p-2 shadow-2xl shadow-black/30">
-      <div role="tablist" aria-label="Pool action" className="grid grid-cols-2 gap-1 rounded-2xl bg-ns-bg/60 p-1">
-        {(["deposit", "withdraw"] as const).map((t) => {
+      <div role="tablist" aria-label="Pool action" className="grid grid-cols-[2fr_1fr] gap-1 rounded-2xl bg-ns-bg/60 p-1">
+        {(["withdraw", "deposit"] as const).map((t) => {
           const active = tab === t;
           const Icon = t === "deposit" ? ArrowDownToLine : ArrowUpFromLine;
           return (
@@ -73,7 +73,7 @@ export function PoolCard(props: PoolCardProps) {
               role="tab"
               aria-selected={active}
               onClick={() => setTab(t)}
-              className={`flex h-11 items-center justify-center gap-2 rounded-xl text-sm font-semibold capitalize transition ${
+              className={`flex h-11 items-center justify-center gap-2 rounded-xl font-semibold capitalize transition ${t === "deposit" ? "text-xs" : "text-sm"} ${
                 active ? "bg-ns-surface-3 text-ns-text shadow" : "text-ns-muted hover:text-ns-text"
               }`}
             >
