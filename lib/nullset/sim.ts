@@ -12,8 +12,8 @@ export const TOKEN = "ETH";
 /** Fixed display rate used only to show a USD estimate next to the balance. */
 export const ETH_USD = 3400;
 
-export function formatUsd(eth: number): string {
-  return (eth * ETH_USD).toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+export function formatUsd(eth: number, rate: number = ETH_USD): string {
+  return (eth * rate).toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 }
 
 const enc = new TextEncoder();

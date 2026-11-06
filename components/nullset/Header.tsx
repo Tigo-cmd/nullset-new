@@ -4,6 +4,7 @@ import { useState } from "react";
 import { BookOpen, Menu, Wallet, X } from "lucide-react";
 import { Button } from "./ui";
 import { formatUsd, shorten, TOKEN } from "@/lib/nullset/sim";
+import { useEthUsd } from "@/lib/nullset/price";
 import { DEFAULT_BRAND, useBrand } from "@/lib/nullset/brand";
 
 export interface DemoWallet {
@@ -35,6 +36,7 @@ export function Logo() {
 }
 
 function WalletButton({ wallet, connecting, onConnect, onDisconnect, full }: HeaderProps & { full?: boolean }) {
+  const rate = useEthUsd();
   if (!wallet) {
     return (
       <Button onClick={onConnect} loading={connecting} className={full ? "w-full" : ""}>
@@ -52,7 +54,7 @@ function WalletButton({ wallet, connecting, onConnect, onDisconnect, full }: Hea
           <span className="font-semibold text-ns-teal">
             {wallet.balance.toLocaleString(undefined, { maximumFractionDigits: 2 })} {TOKEN}
           </span>
-          <span className="text-[10px] text-ns-muted">{formatUsd(wallet.balance)}</span>
+          <span className="text-[10px] text-ns-muted">{formatUsd(wallet.balance, rate)}</span>
         </span>
       </div>
       <Button variant="ghost" size="md" onClick={onDisconnect} aria-label="Disconnect wallet" className="px-3">
@@ -71,6 +73,7 @@ interface HeaderProps {
 
 export function Header(props: HeaderProps) {
   const [open, setOpen] = useState(false);
+  const rate = useEthUsd();
   return (
     <header className="sticky top-0 z-40 border-b border-ns-border bg-ns-bg/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-4">
@@ -98,7 +101,7 @@ export function Header(props: HeaderProps) {
             <span className="text-sm font-bold text-ns-teal">
               {props.wallet.balance.toLocaleString(undefined, { maximumFractionDigits: 2 })} {TOKEN}
             </span>
-            <span className="text-[10px] text-ns-muted">{formatUsd(props.wallet.balance)}</span>
+            <span className="text-[10px] text-ns-muted">{formatUsd(props.wallet.balance, rate)}</span>
           </div>
         )}
         <button
