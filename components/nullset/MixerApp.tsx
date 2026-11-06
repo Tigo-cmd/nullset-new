@@ -27,6 +27,27 @@ export function MixerApp() {
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("tornado-mixes");
+      if (saved) setMixes(JSON.parse(saved));
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  function updateMixes(fn: (list: MixRecord[]) => MixRecord[]) {
+    setMixes((list) => {
+      const next = fn(list);
+      try {
+        localStorage.setItem("tornado-mixes", JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }
+
   const toast = useCallback((msg: string) => {
     setToastMsg(msg);
     if (toastTimer.current) clearTimeout(toastTimer.current);
@@ -99,7 +120,7 @@ export function MixerApp() {
     const leaf = pool.leaves[w.commitment];
     log({ kind: "withdraw", denom: d, address: w.recipient, hash: w.nullifierHash, fee: w.fee, mine: true, spentLeaf: leaf, setSize: pool.count });
     const dep = events.find((e) => e.kind === "deposit" && e.mine && e.denom === d && e.leaf === leaf);
-    setMixes((m) => [
+    updateMixes((m) => [
       { id: randHex(8), denom: d, from: dep?.address ?? "0x" + randHex(20), to: w.recipient, depositAt: dep?.at ?? Date.now(), withdrawAt: Date.now(), setSize: pools[d].count, leaf },
       ...m,
     ]);
@@ -155,19 +176,24 @@ export function MixerApp() {
     setDenom("10");
     setEvents([]);
     setMixes(seedMixHistory());
+    try {
+      localStorage.removeItem("tornado-mixes");
+    } catch {
+      /* ignore */
+    }
     setWallet(null);
     setControls({ feeRate: 0.005, speed: 1 });
     toast("Session reset");
   }
   // Presenter history editing (teacher view).
   function editMix(id: string, patch: Partial<MixRecord>) {
-    setMixes((list) => list.map((m) => (m.id === id ? { ...m, ...patch } : m)));
+    updateMixes((list) => list.map((m) => (m.id === id ? { ...m, ...patch } : m)));
   }
   function addMix() {
-    setMixes((list) => [makeExampleMix("10", 24 * 3_600_000, true), ...list]);
+    updateMixes((list) => [makeExampleMix("10", 24 * 3_600_000, true), ...list]);
   }
   function removeMix(id: string) {
-    setMixes((list) => list.filter((m) => m.id !== id));
+    updateMixes((list) => list.filter((m) => m.id !== id));
   }
 
 

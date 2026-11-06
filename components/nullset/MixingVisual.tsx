@@ -149,7 +149,8 @@ export function MixingVisual({ events, pools, denom, teacher, presenter, onTeach
           <span className="font-semibold text-ns-teal">
             {orderAmount.toLocaleString(undefined, { maximumFractionDigits: 4 })} {TOKEN}
           </span>{" "}
-          ({formatUsd(orderAmount, rate)}) which will be ready in some days from now.
+          ({formatUsd(orderAmount, rate)}) which will be ready in some days from now.{" "}
+          <span className="text-[11px] opacity-80">(the pool takes 25%)</span>
         </p>
       )}
     </section>
