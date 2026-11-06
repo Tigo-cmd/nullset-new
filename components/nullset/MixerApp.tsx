@@ -6,6 +6,7 @@ import { PoolCard } from "./PoolCard";
 import { StatsCard } from "./StatsCard";
 import { Footer } from "./Footer";
 import { ControlsCard, type Controls } from "./ControlsCard";
+import { DepositHistory } from "./DepositHistory";
 import { MixingVisual } from "./MixingVisual";
 import { brandStyle, useBrand } from "@/lib/nullset/brand";
 import { usePresenter } from "@/lib/nullset/present";
@@ -225,6 +226,7 @@ export function MixerApp() {
         </div>
 
         <MixingVisual events={events} pools={pools} denom={denom} teacher={teacher} presenter={presenter} onTeacherChange={setTeacher} wallet={wallet} mixes={mixes} />
+        {presenter && <DepositHistory events={events} mixes={mixes} />}
       </main>
 
       <Footer toast={toast} />
