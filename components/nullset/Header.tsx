@@ -32,8 +32,8 @@ function EthereumIcon({ className = "size-3.5" }: { className?: string }) {
 export function Logo() {
   const { name } = useBrand();
   return (
-    <a href="#top" className="flex items-center gap-2.5 text-lg font-extrabold tracking-tight text-ns-teal" aria-label={`${name} home`}>
-      <img src="/tornado-mark.png" alt="" className="size-8 shrink-0 object-contain" />
+    <a href="#top" className="flex items-center gap-3 text-2xl font-extrabold tracking-tight text-ns-teal sm:text-3xl" aria-label={`${name} home`}>
+      <img src="/tornado-mark.png" alt="" className="size-11 shrink-0 object-contain sm:size-12" />
       {name}
     </a>
   );
@@ -82,7 +82,7 @@ export function Header(props: HeaderProps) {
   const rate = useEthUsd();
   return (
     <header className="sticky top-0 z-40 border-b border-ns-border bg-ns-bg/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 lg:gap-6">
+      <div className="mx-auto flex h-20 max-w-6xl items-center gap-4 px-4 lg:gap-6">
         <Logo />
         <nav className="hidden items-center gap-4 whitespace-nowrap text-[13px] text-ns-muted lg:flex xl:gap-5">
           {LINKS.map((l) => (

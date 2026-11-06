@@ -54,7 +54,7 @@ export function makeNote(denom: Denom): Note {
   return { denom, nullifier: randHex(31), secret: randHex(31) };
 }
 
-export function encodeNote(n: Note, prefix = "nullset"): string {
+export function encodeNote(n: Note, prefix = "tornado"): string {
   return `${prefix}-${n.denom}${TOKEN.toLowerCase()}-${n.nullifier}${n.secret}`;
 }
 

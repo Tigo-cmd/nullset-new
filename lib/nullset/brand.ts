@@ -10,7 +10,7 @@ export interface Brand {
   secondary: string; // hex, e.g. #a3a3a3
 }
 
-export const DEFAULT_BRAND: Brand = { name: "Nullset", primary: "#94febf", secondary: "#5eead4" };
+export const DEFAULT_BRAND: Brand = { name: "tornado", primary: "#94febf", secondary: "#5eead4" };
 
 export const BRAND_PRESETS: { label: string; primary: string; secondary: string }[] = [
   { label: "Mint", primary: "#94febf", secondary: "#5eead4" },
@@ -23,7 +23,7 @@ export const BRAND_PRESETS: { label: string; primary: string; secondary: string 
   { label: "Indigo / cyan", primary: "#818cf8", secondary: "#22d3ee" },
 ];
 
-const KEY = "nullset-brand-v2";
+const KEY = "nullset-brand-v3";
 const subs = new Set<() => void>();
 let current: Brand | null = null;
 
