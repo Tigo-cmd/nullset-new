@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { PT_Mono } from "next/font/google";
 import "./globals.css";
 
-const mono = JetBrains_Mono({ variable: "--font-jetbrains", subsets: ["latin"] });
+const mono = PT_Mono({ weight: "400", variable: "--font-pt-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   description:

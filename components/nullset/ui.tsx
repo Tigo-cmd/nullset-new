@@ -47,9 +47,9 @@ export function InfoTip({ children, label = "More info" }: { children: React.Rea
         aria-expanded={open}
         aria-describedby={open ? id : undefined}
         onClick={() => setOpen((o) => !o)}
-        className="grid size-5 place-items-center rounded-full text-ns-muted hover:text-ns-violet"
+        className="grid size-4 place-items-center rounded-[3px] bg-ns-teal text-[11px] font-bold leading-none text-ns-teal-ink hover:brightness-110"
       >
-        <Info className="size-4" />
+        i
       </button>
       {open && (
         <span

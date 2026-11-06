@@ -46,8 +46,8 @@ export function PoolCard(props: PoolCardProps) {
   return (
     <section id="pool" className="scroll-mt-24 rounded-sm border border-ns-border bg-ns-surface p-2">
       <div className="rounded-sm bg-ns-bg/60 p-1">
-        <div className="flex h-11 items-center justify-center gap-2 rounded-sm bg-ns-surface-3 text-sm font-semibold text-ns-text shadow">
-          <ArrowUpFromLine className="size-4 text-ns-teal" />
+        <div className="flex h-11 items-center justify-center gap-2 rounded-sm bg-ns-teal text-sm font-bold text-ns-teal-ink shadow">
+          <ArrowUpFromLine className="size-4" />
           Withdraw
         </div>
       </div>

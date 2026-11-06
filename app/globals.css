@@ -6,27 +6,27 @@
  * private ("hidden") data. Status colours are kept muted and used sparingly.
  */
 @theme {
-  --color-ns-bg: #0a0a0a;
-  --color-ns-surface: #0a0a0a;
-  --color-ns-surface-2: #121212;
-  --color-ns-surface-3: #1a1a1a;
-  --color-ns-border: #262626;
-  --color-ns-border-strong: #404040;
-  --color-ns-text: #ededed;
-  --color-ns-muted: #8a8a8a;
-  --color-ns-teal: #ededed;
-  --color-ns-teal-soft: #1c1c1c;
-  --color-ns-teal-ink: #0a0a0a;
-  --color-ns-violet: #a3a3a3;
-  --color-ns-violet-soft: #171717;
+  --color-ns-bg: #000403;
+  --color-ns-surface: #070d0b;
+  --color-ns-surface-2: #0d1713;
+  --color-ns-surface-3: #14261f;
+  --color-ns-border: #214031;
+  --color-ns-border-strong: #396a53;
+  --color-ns-text: #ecfdf5;
+  --color-ns-muted: #7c998b;
+  --color-ns-teal: #94febf;
+  --color-ns-teal-soft: #112a1d;
+  --color-ns-teal-ink: #000403;
+  --color-ns-violet: #5eead4;
+  --color-ns-violet-soft: #0f2926;
   --color-ns-warn: #d4a24c;
   --color-ns-warn-soft: #1f1a10;
   --color-ns-danger: #e5484d;
   --color-ns-danger-soft: #221012;
-  --color-ns-ok: #7fbf8e;
+  --color-ns-ok: #94febf;
 
-  --font-sans: var(--font-jetbrains), ui-monospace, monospace;
-  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --font-sans: var(--font-pt-mono), ui-monospace, monospace;
+  --font-mono: var(--font-pt-mono), ui-monospace, monospace;
 }
 
 html {
@@ -37,15 +37,15 @@ body {
   background-color: var(--color-ns-bg);
 }
 
-/* Page shell: flat black with a faint dotted grid. */
+/* Page shell: deep black-green with a faint mint grid. */
 .ns-shell {
   background-color: var(--color-ns-bg);
-  background-image: radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.05) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, rgb(148 254 191 / 0.06) 1px, transparent 0);
   background-size: 24px 24px;
 }
 
 ::selection {
-  background: rgb(237 237 237 / 0.25);
+  background: rgb(148 254 191 / 0.25);
 }
 
 .ns-scroll::-webkit-scrollbar {
