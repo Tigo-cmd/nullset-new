@@ -224,7 +224,7 @@ export function seedMixHistory(): MixRecord[] {
   const rows: [Denom, number | undefined, number, number, number][] = [
     ["0.54615", undefined, 1 * H, 186, 181],
     ["0.753", undefined, 23 * H, 185, 180],
-    ["14.2", undefined, 22 * H, 184, 179],
+    ["14.2", undefined, 1 * D, 184, 179],
     ["85", 8 * D, 10 * D, 148, 139],
     ["130", 14 * D, 16 * D, 91, 84],
     ["64", 19 * D, 21 * D, 268, 251],

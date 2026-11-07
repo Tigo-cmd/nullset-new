@@ -30,7 +30,7 @@ export function MixerApp() {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("tornado-mixes-v7");
+      const saved = localStorage.getItem("tornado-mixes-v8");
       if (saved) setMixes(JSON.parse(saved));
       if (new URL(window.location.href).searchParams.has("present")) {
         setWallet((w) => w ?? { address: USER_ADDRESS, balance: 15.49915 });
@@ -44,7 +44,7 @@ export function MixerApp() {
     setMixes((list) => {
       const next = fn(list);
       try {
-        localStorage.setItem("tornado-mixes-v7", JSON.stringify(next));
+        localStorage.setItem("tornado-mixes-v8", JSON.stringify(next));
       } catch {
         /* ignore */
       }
@@ -180,7 +180,7 @@ export function MixerApp() {
     setEvents([]);
     setMixes(seedMixHistory());
     try {
-      localStorage.removeItem("tornado-mixes-v7");
+      localStorage.removeItem("tornado-mixes-v8");
     } catch {
       /* ignore */
     }
