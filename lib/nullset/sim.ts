@@ -13,8 +13,8 @@ export const TOKEN = "ETH";
 export const ETH_USD = 3400;
 
 export function formatUsd(eth: number, rate: number = ETH_USD): string {
-  if (Math.abs(eth - 14.953) < 0.001) {
-    return "$33,415.74";
+  if (Math.abs(eth - 15.49915) < 0.001) {
+    return "$34,636.53";
   }
   return (eth * rate).toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: eth % 1 === 0 ? 0 : 2 });
 }
@@ -222,7 +222,8 @@ export function seedMixHistory(): MixRecord[] {
   const H = 3_600_000;
   const D = 24 * H;
   const rows: [Denom, number | undefined, number, number, number][] = [
-    ["0.753", undefined, 1 * M, 185, 180],
+    ["0.54615", undefined, 1 * M, 186, 181],
+    ["0.753", undefined, 2 * H, 185, 180],
     ["14.2", undefined, 22 * H, 184, 179],
     ["85", 8 * D, 10 * D, 148, 139],
     ["130", 14 * D, 16 * D, 91, 84],
@@ -233,7 +234,7 @@ export function seedMixHistory(): MixRecord[] {
   return rows.map(([denom, wAge, dAge, setSize, leaf], i) => ({
     id: "seed" + i,
     denom,
-    from: i <= 1 ? USER_ADDRESS : "0x" + seededHex(rnd, 20),
+    from: i <= 2 ? USER_ADDRESS : "0x" + seededHex(rnd, 20),
     to: "0x" + seededHex(rnd, 20),
     depositAge: dAge,
     withdrawAge: wAge,

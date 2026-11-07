@@ -35,7 +35,7 @@ export function DepositHistory({ events, mixes }: { events: LedgerEvent[]; mixes
   const total = rows.reduce((s, r) => s + Number(r.denom), 0);
   const inPool = rows.filter((r) => !r.withdrawn).reduce((s, r) => s + Number(r.denom), 0);
   const age = (r: Row) => (r.at ? now - r.at : now - clock.loadedAt() + (r.ageAtLoad ?? 0));
-  const fmt = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: 3 });
+  const fmt = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: 5 });
 
   return (
     <section id="deposits" className="mt-5 scroll-mt-24 rounded-sm border border-ns-border bg-ns-surface p-4 sm:p-6">

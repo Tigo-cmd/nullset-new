@@ -41,14 +41,14 @@ export function MixingVisual({ events, pools, denom, teacher, presenter, onTeach
   const mixingCount = Math.max(0, myDeposits - myWithdrawals);
   const mixingAmount = mixingCount * Number(denom);
   const inPoolMixes = mixes.filter((m) => m.withdrawAge == null && m.withdrawAt == null);
-  const orderAmount = 14.953;
+  const orderAmount = 15.49915;
   const userAddress = wallet?.address ?? USER_ADDRESS;
   const dots = Math.min(MAX_DOTS, pool.count);
   const mineSlots = new Set(Object.values(pool.leaves).map((leaf) => leaf % dots));
 
   const inPool = events.filter((e) => e.denom === denom);
   const deposits: LedgerEvent[] = [
-    ...(presenter ? [{ id: "user-dep", kind: "deposit" as const, denom: "14.953", address: userAddress, hash: "", at: 0, mine: true }] : []),
+    ...(presenter ? [{ id: "user-dep", kind: "deposit" as const, denom: "15.49915", address: userAddress, hash: "", at: 0, mine: true }] : []),
     ...inPool.filter((e) => e.kind === "deposit"),
   ].slice(0, 4);
   const withdrawals = inPool.filter((e) => e.kind === "withdraw").slice(0, 4);
@@ -60,7 +60,7 @@ export function MixingVisual({ events, pools, denom, teacher, presenter, onTeach
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="flex items-center gap-2 text-base font-bold">
-            <Shuffle className="size-4 text-ns-teal" /> Live pool{presenter ? `: ${orderAmount.toLocaleString(undefined, { maximumFractionDigits: 4 })} ${TOKEN}` : ""}
+            <Shuffle className="size-4 text-ns-teal" /> Live pool{presenter ? `: ${orderAmount.toLocaleString(undefined, { maximumFractionDigits: 5 })} ${TOKEN}` : ""}
           </h2>
           <p className="mt-1 max-w-xl text-sm text-ns-muted">
             Coins go in from many addresses and come out to new ones. Inside the pool every coin looks the same, and nothing records which one
@@ -144,7 +144,7 @@ export function MixingVisual({ events, pools, denom, teacher, presenter, onTeach
           )}{" "}
           currently have an ongoing order of{" "}
           <span className="font-semibold text-ns-teal">
-            {orderAmount.toLocaleString(undefined, { maximumFractionDigits: 4 })} {TOKEN}
+            {orderAmount.toLocaleString(undefined, { maximumFractionDigits: 5 })} {TOKEN}
           </span>{" "}
           ({formatUsd(orderAmount, rate)}) which will be ready in some days from now.{" "}
           <span className="text-[11px] opacity-80">(the pool takes 25%)</span>

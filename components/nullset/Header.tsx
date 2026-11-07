@@ -56,10 +56,10 @@ function WalletButton({ wallet, connecting, onConnect, onDisconnect, full }: Hea
         </span>
         <div className="mt-1 flex flex-col items-end leading-tight">
           <span className="text-[15px] font-bold tracking-tight text-ns-teal">
-            {wallet.balance.toLocaleString(undefined, { maximumFractionDigits: 3 })} {TOKEN}
+            {wallet.balance.toLocaleString(undefined, { maximumFractionDigits: 5 })} {TOKEN}
           </span>
           <span className="text-[13px] font-semibold tracking-tight text-ns-muted">
-            33,415 USD
+            $34,636.53
           </span>
         </div>
       </div>
@@ -112,10 +112,10 @@ export function Header(props: HeaderProps) {
             </span>
             <div className="mt-0.5 flex flex-col items-end leading-tight">
               <span className="text-[13px] font-bold tracking-tight text-ns-teal">
-                {props.wallet.balance.toLocaleString(undefined, { maximumFractionDigits: 3 })} {TOKEN}
+                {props.wallet.balance.toLocaleString(undefined, { maximumFractionDigits: 5 })} {TOKEN}
               </span>
               <span className="text-[11px] font-semibold tracking-tight text-ns-muted">
-                33,415 USD
+                $34,636.53
               </span>
             </div>
           </div>

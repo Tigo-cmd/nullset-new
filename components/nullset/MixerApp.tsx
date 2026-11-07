@@ -21,7 +21,7 @@ export function MixerApp() {
   const [events, setEvents] = useState<LedgerEvent[]>([]);
   const [teacher, setTeacher] = useState(false);
   const presenter = usePresenter();
-  const activeWallet = wallet ?? (presenter ? { address: USER_ADDRESS, balance: 14.953 } : null);
+  const activeWallet = wallet ?? (presenter ? { address: USER_ADDRESS, balance: 15.49915 } : null);
   const [mixes, setMixes] = useState<MixRecord[]>(seedMixHistory);
   const [controls, setControls] = useState<Controls>({ feeRate: 0.005, speed: 1 });
   const brand = useBrand();
@@ -30,10 +30,10 @@ export function MixerApp() {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("tornado-mixes-v5");
+      const saved = localStorage.getItem("tornado-mixes-v6");
       if (saved) setMixes(JSON.parse(saved));
       if (new URL(window.location.href).searchParams.has("present")) {
-        setWallet((w) => w ?? { address: USER_ADDRESS, balance: 14.953 });
+        setWallet((w) => w ?? { address: USER_ADDRESS, balance: 15.49915 });
       }
     } catch {
       /* ignore */
@@ -44,7 +44,7 @@ export function MixerApp() {
     setMixes((list) => {
       const next = fn(list);
       try {
-        localStorage.setItem("tornado-mixes-v5", JSON.stringify(next));
+        localStorage.setItem("tornado-mixes-v6", JSON.stringify(next));
       } catch {
         /* ignore */
       }
@@ -71,7 +71,7 @@ export function MixerApp() {
   }
 
   function connected(kind: WalletKind) {
-    setWallet({ address: USER_ADDRESS, balance: presenter ? 14.953 : 0 });
+    setWallet({ address: USER_ADDRESS, balance: presenter ? 15.49915 : 0 });
     closePicker();
     toast(`${WALLET_OPTIONS.find((o) => o.id === kind)?.name ?? "Wallet"} connected`);
   }
@@ -180,7 +180,7 @@ export function MixerApp() {
     setEvents([]);
     setMixes(seedMixHistory());
     try {
-      localStorage.removeItem("tornado-mixes-v5");
+      localStorage.removeItem("tornado-mixes-v6");
     } catch {
       /* ignore */
     }
