@@ -51,14 +51,14 @@ function WalletButton({ wallet, connecting, onConnect, onDisconnect, full }: Hea
   return (
     <div className={`flex items-center gap-2 ${full ? "w-full" : ""}`}>
       <div className="flex flex-1 flex-col items-center justify-center py-1">
-        <span className="inline-block rounded-md bg-[#39b54a] px-5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-black">
+        <span className="inline-block rounded-md bg-ns-teal px-5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-ns-teal-ink">
           CONNECTED
         </span>
         <div className="mt-1 flex flex-col items-center leading-tight">
-          <span className="text-[15px] font-bold tracking-tight text-[#4c44bc]">
+          <span className="text-[15px] font-bold tracking-tight text-ns-teal">
             {wallet.balance.toLocaleString(undefined, { maximumFractionDigits: 3 })} {TOKEN}
           </span>
-          <span className="text-[13px] font-semibold tracking-tight text-[#5a6275]">
+          <span className="text-[13px] font-semibold tracking-tight text-ns-muted">
             33,415 USD
           </span>
         </div>
@@ -107,14 +107,14 @@ export function Header(props: HeaderProps) {
             className="ml-auto flex flex-col items-center justify-center lg:hidden"
             aria-label="Connected wallet"
           >
-            <span className="inline-block rounded-md bg-[#39b54a] px-3.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-black">
+            <span className="inline-block rounded-md bg-ns-teal px-3.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-ns-teal-ink">
               CONNECTED
             </span>
             <div className="mt-0.5 flex flex-col items-center leading-tight">
-              <span className="text-[13px] font-bold tracking-tight text-[#4c44bc]">
+              <span className="text-[13px] font-bold tracking-tight text-ns-teal">
                 {props.wallet.balance.toLocaleString(undefined, { maximumFractionDigits: 3 })} {TOKEN}
               </span>
-              <span className="text-[11px] font-semibold tracking-tight text-[#5a6275]">
+              <span className="text-[11px] font-semibold tracking-tight text-ns-muted">
                 33,415 USD
               </span>
             </div>
