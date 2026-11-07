@@ -40,7 +40,6 @@ export function Logo() {
 }
 
 function WalletButton({ wallet, connecting, onConnect, onDisconnect, full }: HeaderProps & { full?: boolean }) {
-  const rate = useEthUsd();
   if (!wallet) {
     return (
       <Button onClick={onConnect} loading={connecting} className={full ? "w-full" : ""}>
@@ -51,23 +50,18 @@ function WalletButton({ wallet, connecting, onConnect, onDisconnect, full }: Hea
   }
   return (
     <div className={`flex items-center gap-2 ${full ? "w-full" : ""}`}>
-      <div className="flex h-11 flex-1 items-center gap-2 rounded-sm border border-ns-border bg-ns-surface-2 px-3 text-sm">
-        <span className="grid size-6 shrink-0 place-items-center rounded-[3px] border border-ns-teal/50 bg-ns-teal-soft text-ns-teal">
-          <EthereumIcon className="size-3.5" />
+      <div className="flex flex-1 flex-col items-center justify-center py-1">
+        <span className="inline-block rounded-md bg-[#39b54a] px-5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-black">
+          CONNECTED
         </span>
-        <div className="flex flex-col leading-tight">
-          <span className="flex items-center gap-1 font-mono text-xs text-ns-text">
-            <span className="size-1.5 rounded-full bg-ns-ok" aria-hidden />
-            {shorten(wallet.address)}
-          </span>
-          <span className="text-[10px] text-ns-ok font-semibold">Connected</span>
-        </div>
-        <span className="ml-auto flex flex-col items-end pl-2 leading-tight">
-          <span className="font-semibold text-ns-teal text-xs">
+        <div className="mt-1 flex flex-col items-center leading-tight">
+          <span className="text-[15px] font-bold tracking-tight text-[#4c44bc]">
             {wallet.balance.toLocaleString(undefined, { maximumFractionDigits: 3 })} {TOKEN}
           </span>
-          <span className="text-[10px] text-ns-muted">{formatUsd(wallet.balance, rate)}</span>
-        </span>
+          <span className="text-[13px] font-semibold tracking-tight text-[#5a6275]">
+            33,415 USD
+          </span>
+        </div>
       </div>
       <Button variant="ghost" size="md" onClick={onDisconnect} aria-label="Disconnect wallet" className="px-3">
         <X className="size-4" />
@@ -110,22 +104,18 @@ export function Header(props: HeaderProps) {
         </div>
         {props.wallet && (
           <div
-            className="ml-auto flex h-10 items-center gap-2 rounded-sm border border-ns-border bg-ns-surface-2 px-2.5 lg:hidden"
+            className="ml-auto flex flex-col items-center justify-center lg:hidden"
             aria-label="Connected wallet"
           >
-            <span className="grid size-5 shrink-0 place-items-center rounded-[3px] border border-ns-teal/50 bg-ns-teal-soft text-ns-teal">
-              <EthereumIcon className="size-3" />
+            <span className="inline-block rounded-md bg-[#39b54a] px-3.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-black">
+              CONNECTED
             </span>
-            <div className="flex flex-col leading-tight">
-              <div className="flex items-center gap-1.5">
-                <span className="flex items-center gap-1 font-mono text-[11px] text-ns-text">
-                  <span className="size-1.5 rounded-full bg-ns-ok" aria-hidden />
-                  {shorten(props.wallet.address, 4, 4)}
-                </span>
-                <span className="text-[9px] text-ns-ok font-semibold">Connected</span>
-              </div>
-              <span className="text-[10px] font-bold text-ns-teal">
-                {props.wallet.balance.toLocaleString(undefined, { maximumFractionDigits: 3 })} {TOKEN} · {formatUsd(props.wallet.balance, rate)}
+            <div className="mt-0.5 flex flex-col items-center leading-tight">
+              <span className="text-[13px] font-bold tracking-tight text-[#4c44bc]">
+                {props.wallet.balance.toLocaleString(undefined, { maximumFractionDigits: 3 })} {TOKEN}
+              </span>
+              <span className="text-[11px] font-semibold tracking-tight text-[#5a6275]">
+                33,415 USD
               </span>
             </div>
           </div>
